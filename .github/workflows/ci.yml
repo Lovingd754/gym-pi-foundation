@@ -88,12 +88,14 @@ jobs:
       - name: Start Postgres
         run: |
           docker network create smoke
-          # The ECR public mirror intermittently answers "toomanyrequests: Rate
-          # exceeded" (same transient the service-container jobs hit at
-          # "Initialize containers"); retry the pull with backoff instead of
-          # failing the whole job on the first 429.
+          # Fall back to Docker Hub when the ECR mirror is rate limited.
+          # Tag either source locally so the container uses the image we pulled.
           for attempt in $(seq 1 5); do
             if docker pull -q public.ecr.aws/docker/library/postgres:16-alpine; then
+              docker tag public.ecr.aws/docker/library/postgres:16-alpine smoke-postgres:16-alpine
+              break
+            elif docker pull -q postgres:16-alpine; then
+              docker tag postgres:16-alpine smoke-postgres:16-alpine
               break
             fi
             if [ "$attempt" = "5" ]; then
@@ -105,7 +107,7 @@ jobs:
           done
           docker run -d --name smoke-db --network smoke \
             -e POSTGRES_USER=gympi -e POSTGRES_PASSWORD=gympi -e POSTGRES_DB=gympi \
-            public.ecr.aws/docker/library/postgres:16-alpine
+            smoke-postgres:16-alpine
           for i in $(seq 1 30); do
             if docker exec smoke-db pg_isready -U gympi -d gympi >/dev/null 2>&1; then
               echo "Postgres is ready"
