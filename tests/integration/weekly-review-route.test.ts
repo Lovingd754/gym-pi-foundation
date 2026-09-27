@@ -65,7 +65,12 @@ function idParams(id: string) {
 // which is the only thing that makes a review due.
 async function activatedPlan(suffix: string, planAgeDays = 8) {
   const user = await db.user.create({
-    data: { email: `${suffix}@weekly-review.test`, passwordHash: 'test-password-hash' },
+    data: {
+      email: `${suffix}@weekly-review.test`,
+      passwordHash: 'test-password-hash',
+      // Exercise the real provider path without deployment credentials or network calls.
+      llmProvider: 'demo',
+    },
   });
   await saveAssessment(user.id, baseInput, new Date());
   mockUserId.mockResolvedValue(user.id);
