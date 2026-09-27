@@ -1,0 +1,98 @@
+# ============================================================
+# GymPi - Compose PROD
+# ============================================================
+# Stack complète : Next.js + Postgres.
+# Nginx reverse proxy + Certbot HTTPS sont déjà en place sur le VPS,
+# donc l'app expose seulement 127.0.0.1:3000 (proxypass Nginx).
+#
+# Usage :
+#   docker compose -f docker-compose.prod.yml up -d --build
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: gympi-db
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        # Demo mode is build-time (NEXT_PUBLIC_*). Defaults keep a normal
+        # self-host build unchanged; the public demo sets these in its .env.
+        NEXT_PUBLIC_DEMO_MODE: ${NEXT_PUBLIC_DEMO_MODE:-false}
+        NEXT_PUBLIC_DEMO_EMAIL: ${NEXT_PUBLIC_DEMO_EMAIL:-}
+        NEXT_PUBLIC_DEMO_PASSWORD: ${NEXT_PUBLIC_DEMO_PASSWORD:-}
+    container_name: gympi-app
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      JWT_SECRET: ${JWT_SECRET}
+      USER_EMAIL: ${USER_EMAIL}
+      USER_PASSWORD: ${USER_PASSWORD}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+      OPENROUTER_MODEL: ${OPENROUTER_MODEL}
+      OPENROUTER_APP_NAME: ${OPENROUTER_APP_NAME:-GymPi}
+      OPENROUTER_APP_URL: ${OPENROUTER_APP_URL}
+      CODEX_LB_BASE_URL: ${CODEX_LB_BASE_URL:-http://127.0.0.1:8317/v1}
+      CODEX_LB_API_KEY: ${CODEX_LB_API_KEY:-}
+      CODEX_LB_MODEL: ${CODEX_LB_MODEL:-gpt-5.6-sol}
+      NEXTAUTH_URL: ${NEXTAUTH_URL}
+      MCP_PUBLIC_URL: ${MCP_PUBLIC_URL:-}
+      NODE_ENV: production
+      # Progress-photo files (issue #269): kept on the named volume below so
+      # they survive container rebuilds. Back it up alongside the database.
+      UPLOADS_DIR: /app/uploads
+    volumes:
+      - uploads:/app/uploads
+    # Applique les migrations Prisma puis lance Next.js standalone.
+    # `migrate deploy` est idempotent : sans nouvelle migration, c'est un no-op.
+    # On invoque le bundle Prisma directement (le shim .bin perd ses .wasm
+    # quand COPY déréférence le symlink).
+    command: >
+      sh -c "node node_modules/prisma/build/index.js migrate deploy && node server.js"
+    ports:
+      # Bind local uniquement, Nginx fait le reverse proxy en frontal.
+      # Port hôte 3010 (3000 est pris par lead-radar sur le VPS partagé).
+      - '127.0.0.1:3010:3000'
+
+  # Run-once demo seeder (public demo only): resets the demo account to the
+  # rich deterministic dataset (12 weeks of sessions, bodyweight trend, a
+  # goal, readiness check-ins). Built from the builder stage, which still has
+  # the dev dependencies (tsx) the seed scripts need. Re-running it on every
+  # deploy doubles as the cleanup of whatever visitors did to the demo data.
+  #   docker compose -f docker-compose.prod.yml --profile demo run --rm seed-demo
+  seed-demo:
+    profiles: ['demo']
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      USER_EMAIL: ${USER_EMAIL}
+      USER_PASSWORD: ${USER_PASSWORD}
+    command: >
+      sh -c "npx prisma migrate deploy && npm run db:seed && npm run seed:demo"
+
+volumes:
+  postgres-data:
+  uploads:

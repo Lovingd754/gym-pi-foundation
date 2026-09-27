@@ -1,0 +1,71 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Next.js
+.next/
+.next-dev/
+out/
+/build/
+next-env.d.ts
+tsconfig.tsbuildinfo
+
+# next-pwa : service worker généré au build, à ne pas commit
+public/sw.js
+public/sw.js.map
+public/workbox-*.js
+public/workbox-*.js.map
+public/fallback-*.js
+
+# Production
+dist/
+
+# Environment
+.env
+.env*.local
+/secrets/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Prisma
+prisma/.env
+
+# Tests
+coverage/
+test-results/
+playwright-report/
+playwright/.cache/
+
+# Media: intermediate recordings (the committed GIFs/MP4s live in docs/)
+docs/media/raw/
+
+# User uploads (progress photos): local files, never committed
+/uploads/
+
+# Turbo / Vercel
+.turbo/
+.vercel/
+
+# Claude Code local (machine-specific) overrides
+.claude/settings.local.json
+# Claude Code runtime state (locks, scheduled tasks) - never commit
+.claude/scheduled_tasks.lock
+.claude/*.lock
+
+# Prisma 7 generated client (run `prisma generate`)
+/prisma/generated/
+
+# Local development handoff and machine-specific agent state
+.claude/

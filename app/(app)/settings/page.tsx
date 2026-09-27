@@ -1,0 +1,80 @@
+import { Settings as SettingsIcon } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
+import { requireSession } from '@/lib/auth';
+import { db } from '@/lib/db';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { SettingsClient } from '@/components/settings/settings-client';
+import { ProfileSection } from '@/components/settings/profile-section';
+import { MemoriesSection } from '@/components/settings/memories-section';
+import { ModelSection } from '@/components/settings/model-section';
+import { PlanSection } from '@/components/settings/plan-section';
+import { prismaAgentMemoryStore } from '@/lib/agent/memory-store';
+
+export default async function SettingsPage() {
+  const t = await getTranslations('settings');
+  const common = await getTranslations('common');
+  const auth = await requireSession();
+  // Only what the surviving sections render: the gym inventory, the exercise
+  // catalog and the MCP tokens were loaded for sections that are gone.
+  const user = await db.user.findUnique({
+    where: { id: auth.userId },
+    select: {
+      displayName: true,
+      bodyweight: true,
+      sex: true,
+      heightCm: true,
+      goal: true,
+      weeklyFrequency: true,
+      weeklyAutoReplan: true,
+      unit: true,
+      activeGymId: true,
+    },
+  });
+
+  const memories = await prismaAgentMemoryStore.list(auth.userId, 'ACTIVE');
+
+  return (
+    <main className="flex-1 px-4 py-6">
+      <div className="mx-auto flex max-w-2xl flex-col gap-6">
+        <div className="flex items-center gap-3">
+          <SettingsIcon className="size-6" />
+          <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
+        </div>
+
+        <Card>
+          <CardHeader className="pb-3">
+            <h2 className="text-base font-semibold">{t('account')}</h2>
+          </CardHeader>
+          <CardContent className="text-sm">
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-muted-foreground">{common('fields.email')}</span>
+              <span className="font-medium">{auth.email}</span>
+            </div>
+          </CardContent>
+        </Card>
+
+        <ProfileSection
+          initial={{
+            displayName: user?.displayName ?? null,
+            bodyweight: user?.bodyweight ?? null,
+            sex: user?.sex ?? null,
+            heightCm: user?.heightCm ?? null,
+            goal: user?.goal ?? null,
+            weeklyFrequency: user?.weeklyFrequency ?? null,
+            unit: user?.unit ?? 'KG',
+          }}
+        />
+
+        <MemoriesSection
+          initialMemories={memories.map((memory) => ({ id: memory.id, content: memory.content }))}
+        />
+
+        <PlanSection initialAutoReplan={user?.weeklyAutoReplan ?? true} />
+
+        <ModelSection />
+
+        <SettingsClient />
+      </div>
+    </main>
+  );
+}

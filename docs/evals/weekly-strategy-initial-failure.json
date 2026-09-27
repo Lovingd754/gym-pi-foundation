@@ -1,0 +1,18 @@
+{
+  "separateFromBaseline": true,
+  "provider": "deepseek",
+  "model": "deepseek-v4-flash",
+  "completed": 2,
+  "passed": 0,
+  "elapsedMs": 26136,
+  "costUsd": 0.0043177860000000005,
+  "wireUsage": [
+    {"prompt_tokens":4886,"completion_tokens":3000,"total_tokens":7886,"prompt_tokens_details":{"cached_tokens":0},"completion_tokens_details":{"reasoning_tokens":3000},"prompt_cache_hit_tokens":0,"prompt_cache_miss_tokens":4886},
+    {"prompt_tokens":829,"completion_tokens":2893,"total_tokens":3722,"prompt_tokens_details":{"cached_tokens":512},"completion_tokens_details":{"reasoning_tokens":2491},"prompt_cache_hit_tokens":512,"prompt_cache_miss_tokens":317}
+  ],
+  "results": [
+    {"id":"travel-recovery","passed":false,"error":"WEEKLY_MODEL_UNAVAILABLE","ms":13475},
+    {"id":"no-evidence","passed":false,"error":"WEEKLY_MODEL_UNAVAILABLE","ms":12661}
+  ],
+  "limitations":["Initial run preserved before diagnostic retry; raw response was not captured.","Actual weekly prompt/request/parser invoked; apply stage was not reached because strategy request failed."]
+}

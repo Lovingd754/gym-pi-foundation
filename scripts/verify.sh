@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+#
+# verify.sh - Gym Pi Foundation local quality checks.
+#
+# Mirrors CI quality and build jobs without requiring a database.
+#
+#   PASS  -> exit 0, the working tree is safe to commit / open a PR from.
+#   FAIL  -> exit non-zero, the loop must fix the reported step before retrying.
+#
+# Tiers:
+#   (default)  prisma generate + lint + typecheck + unit tests + production build
+#   --full     also runs integration + E2E (needs the test Postgres on :5434)
+#
+# The integration/E2E tiers need Docker + a database, so the default gate stays
+# fast and hermetic; CI runs the full pyramid on every PR.
+
+set -uo pipefail
+
+# --- Make node 22 (nvm) available even in a non-interactive shell -------------
+# The repo requires Node 22.19+ (22.x). The system node may be older, so prepend the
+# nvm install if present. Adjust NVM_NODE if your version differs.
+NVM_NODE="${NVM_NODE:-$HOME/.nvm/versions/node/v22.19.0/bin}"
+if [ -d "$NVM_NODE" ]; then
+  export PATH="$NVM_NODE:$PATH"
+fi
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT" || exit 1
+
+FULL=0
+[ "${1:-}" = "--full" ] && FULL=1
+
+fail() { echo ""; echo "❌ GREEN-GATE FAILED at: $1"; exit 1; }
+step() { echo ""; echo "▶ $1"; }
+
+echo "GymPi green-gate — node $(node -v 2>/dev/null || echo '??'), npm $(npm -v 2>/dev/null || echo '??')"
+
+step "prisma generate"
+npx prisma generate >/dev/null || fail "prisma generate"
+
+step "lint"
+npm run lint || fail "lint"
+
+step "typecheck"
+npm run typecheck || fail "typecheck"
+
+step "unit tests"
+npm run test || fail "unit tests"
+
+step "production build"
+# Build needs these set but never connects; placeholders are fine and are NOT
+# exported globally (so real prisma/dev commands keep using your .env).
+DATABASE_URL="postgresql://user:pass@localhost:5432/db" \
+JWT_SECRET="ci-build-placeholder-secret-at-least-32-chars" \
+  npm run build || fail "production build"
+
+if [ "$FULL" = "1" ]; then
+  # Serialize the DB/port-sharing tiers across concurrent verify runs
+  # (issue #283). Every checkout and worktree shares the one test Postgres on
+  # :5434 and the one E2E server port :3031, so two overlapping --full runs
+  # corrupt each other: a concurrent TRUNCATE resets the DB mid-run and the
+  # port is contended (lesson L16). A machine-wide lock makes the second run
+  # wait instead; it is released automatically when this process exits. CI
+  # never goes through this script, so it is unaffected.
+  LOCK_FILE="${TMPDIR:-/tmp}/gympi-test-infra.lock"
+  exec 9>"$LOCK_FILE" || fail "test-infra lock (cannot open $LOCK_FILE)"
+  if ! flock --nonblock 9; then
+    echo "  another verify run holds the shared test infra (:5434/:3031); waiting for the lock..."
+    flock --wait 3600 9 || fail "test-infra lock (still held after 60m; a stale next-server or vitest from an interrupted run may hold it - check: fuser -v $LOCK_FILE)"
+  fi
+  step "integration tests (needs Postgres on :5434)"
+  # 9>&- keeps the lock fd out of the test children, so a zombie next-server
+  # surviving an interrupted run (lesson L12) cannot hold the lock forever.
+  npm run test:integration 9>&- || fail "integration tests"
+  step "E2E tests (Playwright)"
+  npm run test:e2e 9>&- || fail "E2E tests"
+fi
+
+echo ""
+echo "✅ GREEN-GATE PASSED — safe to commit and open a PR."

@@ -1,0 +1,2535 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`buildBaselinePlan determinism > matches the canonical snapshot for experienced recomp (male reference) 1`] = `
+"{
+  "schemaVersion": 1,
+  "rulesVersion": "baseline-v1",
+  "goal": {
+    "type": "RECOMP",
+    "desiredWeeklyRatePct": 0,
+    "feasibility": {
+      "status": "MILESTONE",
+      "earliestDate": null,
+      "latestDate": null,
+      "targetDate": "2027-01-15"
+    }
+  },
+  "strength": {
+    "split": "UPPER_LOWER_PPL",
+    "weeklyTargetSets": 10,
+    "introRir": null,
+    "introDurationDays": 0,
+    "steadyRir": 2,
+    "achievedSetsByMuscleGroup": {
+      "CHEST": 10,
+      "BACK_WIDTH": 10,
+      "BACK_THICKNESS": 10,
+      "SHOULDERS_FRONT": 10,
+      "QUADS": 10,
+      "HAMSTRINGS": 10
+    },
+    "days": [
+      {
+        "name": "Upper",
+        "dayOfWeek": 1,
+        "exercises": [
+          {
+            "name": "Bench Press",
+            "muscleGroup": "CHEST",
+            "category": "COMPOUND",
+            "equipmentType": "BARBELL",
+            "usesBodyweight": false,
+            "targetSets": 5,
+            "targetRepsMin": 6,
+            "targetRepsMax": 10,
+            "targetRIR": 2,
+            "restSec": 150,
+            "notes": "catalog:bench_press"
+          },
+          {
+            "name": "Barbell Row",
+            "muscleGroup": "BACK_THICKNESS",
+            "category": "COMPOUND",
+            "equipmentType": "BARBELL",
+            "usesBodyweight": false,
+            "targetSets": 5,
+            "targetRepsMin": 6,
+            "targetRepsMax": 10,
+            "targetRIR": 2,
+            "restSec": 150,
+            "notes": "catalog:barbell_row"
+          },
+          {
+            "name": "Overhead Press",
+            "muscleGroup": "SHOULDERS_FRONT",
+            "category": "COMPOUND",
+            "equipmentType": "BARBELL",
+            "usesBodyweight": false,
+            "targetSets": 5,
+            "targetRepsMin": 6,
+            "targetRepsMax": 10,
+            "targetRIR": 2,
+            "restSec": 150,
+            "notes": "catalog:overhead_press"
+          },
+          {
+            "name": "Pull-up",
+            "muscleGroup": "BACK_WIDTH",
+            "category": "COMPOUND",
+            "equipmentType": "BODYWEIGHT",
+            "usesBodyweight": true,
+            "targetSets": 5,
+            "targetRepsMin": 6,
+            "targetRepsMax": 10,
+            "targetRIR": 2,
+            "restSec": 150,
+            "notes": "catalog:pull_up"
+          },
+          {
+            "name": "Cable Lateral Raise",
+            "muscleGroup": "SHOULDERS_LATERAL",
+            "category": "ISOLATION",
+            "equipmentType": "CABLE",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:cable_lateral_raise"
+          },
+          {
+            "name": "Cable Crunch",
+            "muscleGroup": "ABS",
+            "category": "ISOLATION",
+            "equipmentType": "CABLE",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:cable_crunch"
+          },
+          {
+            "name": "Cable Curl",
+            "muscleGroup": "BICEPS",
+            "category": "ISOLATION",
+            "equipmentType": "CABLE",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:cable_curl"
+          },
+          {
+            "name": "Cable Triceps Extension",
+            "muscleGroup": "TRICEPS",
+            "category": "ISOLATION",
+            "equipmentType": "CABLE",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:cable_triceps_extension"
+          },
+          {
+            "name": "Standing Calf Raise",
+            "muscleGroup": "CALVES",
+            "category": "ISOLATION",
+            "equipmentType": "BODYWEIGHT",
+            "usesBodyweight": true,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:standing_calf_raise"
+          },
+          {
+            "name": "Leg Extension",
+            "muscleGroup": "QUADS",
+            "category": "ISOLATION",
+            "equipmentType": "MACHINE",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:leg_extension"
+          }
+        ],
+        "estimatedDurationMin": 88,
+        "lowerBodyDemand": false
+      },
+      {
+        "name": "Lower",
+        "dayOfWeek": 2,
+        "exercises": [
+          {
+            "name": "Back Squat",
+            "muscleGroup": "QUADS",
+            "category": "COMPOUND",
+            "equipmentType": "BARBELL",
+            "usesBodyweight": false,
+            "targetSets": 5,
+            "targetRepsMin": 6,
+            "targetRepsMax": 10,
+            "targetRIR": 2,
+            "restSec": 150,
+            "notes": "catalog:back_squat"
+          },
+          {
+            "name": "Romanian Deadlift",
+            "muscleGroup": "HAMSTRINGS",
+            "category": "COMPOUND",
+            "equipmentType": "BARBELL",
+            "usesBodyweight": false,
+            "targetSets": 5,
+            "targetRepsMin": 6,
+            "targetRepsMax": 10,
+            "targetRIR": 2,
+            "restSec": 150,
+            "notes": "catalog:romanian_deadlift"
+          },
+          {
+            "name": "Cable Lateral Raise",
+            "muscleGroup": "SHOULDERS_LATERAL",
+            "category": "ISOLATION",
+            "equipmentType": "CABLE",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:cable_lateral_raise"
+          },
+          {
+            "name": "Cable Crunch",
+            "muscleGroup": "ABS",
+            "category": "ISOLATION",
+            "equipmentType": "CABLE",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:cable_crunch"
+          },
+          {
+            "name": "Cable Curl",
+            "muscleGroup": "BICEPS",
+            "category": "ISOLATION",
+            "equipmentType": "CABLE",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:cable_curl"
+          },
+          {
+            "name": "Cable Triceps Extension",
+            "muscleGroup": "TRICEPS",
+            "category": "ISOLATION",
+            "equipmentType": "CABLE",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:cable_triceps_extension"
+          },
+          {
+            "name": "Standing Calf Raise",
+            "muscleGroup": "CALVES",
+            "category": "ISOLATION",
+            "equipmentType": "BODYWEIGHT",
+            "usesBodyweight": true,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:standing_calf_raise"
+          },
+          {
+            "name": "Leg Extension",
+            "muscleGroup": "QUADS",
+            "category": "ISOLATION",
+            "equipmentType": "MACHINE",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:leg_extension"
+          },
+          {
+            "name": "Leg Curl",
+            "muscleGroup": "HAMSTRINGS",
+            "category": "ISOLATION",
+            "equipmentType": "MACHINE",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:leg_curl"
+          }
+        ],
+        "estimatedDurationMin": 63,
+        "lowerBodyDemand": true
+      },
+      {
+        "name": "Push",
+        "dayOfWeek": 3,
+        "exercises": [
+          {
+            "name": "Bench Press",
+            "muscleGroup": "CHEST",
+            "category": "COMPOUND",
+            "equipmentType": "BARBELL",
+            "usesBodyweight": false,
+            "targetSets": 5,
+            "targetRepsMin": 6,
+            "targetRepsMax": 10,
+            "targetRIR": 2,
+            "restSec": 150,
+            "notes": "catalog:bench_press"
+          },
+          {
+            "name": "Overhead Press",
+            "muscleGroup": "SHOULDERS_FRONT",
+            "category": "COMPOUND",
+            "equipmentType": "BARBELL",
+            "usesBodyweight": false,
+            "targetSets": 5,
+            "targetRepsMin": 6,
+            "targetRepsMax": 10,
+            "targetRIR": 2,
+            "restSec": 150,
+            "notes": "catalog:overhead_press"
+          },
+          {
+            "name": "Cable Lateral Raise",
+            "muscleGroup": "SHOULDERS_LATERAL",
+            "category": "ISOLATION",
+            "equipmentType": "CABLE",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:cable_lateral_raise"
+          },
+          {
+            "name": "Cable Crunch",
+            "muscleGroup": "ABS",
+            "category": "ISOLATION",
+            "equipmentType": "CABLE",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:cable_crunch"
+          },
+          {
+            "name": "Cable Curl",
+            "muscleGroup": "BICEPS",
+            "category": "ISOLATION",
+            "equipmentType": "CABLE",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:cable_curl"
+          },
+          {
+            "name": "Cable Triceps Extension",
+            "muscleGroup": "TRICEPS",
+            "category": "ISOLATION",
+            "equipmentType": "CABLE",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:cable_triceps_extension"
+          },
+          {
+            "name": "Standing Calf Raise",
+            "muscleGroup": "CALVES",
+            "category": "ISOLATION",
+            "equipmentType": "BODYWEIGHT",
+            "usesBodyweight": true,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:standing_calf_raise"
+          },
+          {
+            "name": "Leg Extension",
+            "muscleGroup": "QUADS",
+            "category": "ISOLATION",
+            "equipmentType": "MACHINE",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:leg_extension"
+          },
+          {
+            "name": "Leg Curl",
+            "muscleGroup": "HAMSTRINGS",
+            "category": "ISOLATION",
+            "equipmentType": "MACHINE",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:leg_curl"
+          }
+        ],
+        "estimatedDurationMin": 63,
+        "lowerBodyDemand": false
+      },
+      {
+        "name": "Pull",
+        "dayOfWeek": 5,
+        "exercises": [
+          {
+            "name": "Barbell Row",
+            "muscleGroup": "BACK_THICKNESS",
+            "category": "COMPOUND",
+            "equipmentType": "BARBELL",
+            "usesBodyweight": false,
+            "targetSets": 5,
+            "targetRepsMin": 6,
+            "targetRepsMax": 10,
+            "targetRIR": 2,
+            "restSec": 150,
+            "notes": "catalog:barbell_row"
+          },
+          {
+            "name": "Pull-up",
+            "muscleGroup": "BACK_WIDTH",
+            "category": "COMPOUND",
+            "equipmentType": "BODYWEIGHT",
+            "usesBodyweight": true,
+            "targetSets": 5,
+            "targetRepsMin": 6,
+            "targetRepsMax": 10,
+            "targetRIR": 2,
+            "restSec": 150,
+            "notes": "catalog:pull_up"
+          },
+          {
+            "name": "Cable Lateral Raise",
+            "muscleGroup": "SHOULDERS_LATERAL",
+            "category": "ISOLATION",
+            "equipmentType": "CABLE",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:cable_lateral_raise"
+          },
+          {
+            "name": "Cable Crunch",
+            "muscleGroup": "ABS",
+            "category": "ISOLATION",
+            "equipmentType": "CABLE",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:cable_crunch"
+          },
+          {
+            "name": "Cable Curl",
+            "muscleGroup": "BICEPS",
+            "category": "ISOLATION",
+            "equipmentType": "CABLE",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:cable_curl"
+          },
+          {
+            "name": "Cable Triceps Extension",
+            "muscleGroup": "TRICEPS",
+            "category": "ISOLATION",
+            "equipmentType": "CABLE",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:cable_triceps_extension"
+          },
+          {
+            "name": "Standing Calf Raise",
+            "muscleGroup": "CALVES",
+            "category": "ISOLATION",
+            "equipmentType": "BODYWEIGHT",
+            "usesBodyweight": true,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:standing_calf_raise"
+          },
+          {
+            "name": "Leg Extension",
+            "muscleGroup": "QUADS",
+            "category": "ISOLATION",
+            "equipmentType": "MACHINE",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:leg_extension"
+          },
+          {
+            "name": "Leg Curl",
+            "muscleGroup": "HAMSTRINGS",
+            "category": "ISOLATION",
+            "equipmentType": "MACHINE",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:leg_curl"
+          }
+        ],
+        "estimatedDurationMin": 63,
+        "lowerBodyDemand": false
+      },
+      {
+        "name": "Legs",
+        "dayOfWeek": 6,
+        "exercises": [
+          {
+            "name": "Back Squat",
+            "muscleGroup": "QUADS",
+            "category": "COMPOUND",
+            "equipmentType": "BARBELL",
+            "usesBodyweight": false,
+            "targetSets": 5,
+            "targetRepsMin": 6,
+            "targetRepsMax": 10,
+            "targetRIR": 2,
+            "restSec": 150,
+            "notes": "catalog:back_squat"
+          },
+          {
+            "name": "Romanian Deadlift",
+            "muscleGroup": "HAMSTRINGS",
+            "category": "COMPOUND",
+            "equipmentType": "BARBELL",
+            "usesBodyweight": false,
+            "targetSets": 5,
+            "targetRepsMin": 6,
+            "targetRepsMax": 10,
+            "targetRIR": 2,
+            "restSec": 150,
+            "notes": "catalog:romanian_deadlift"
+          },
+          {
+            "name": "Cable Lateral Raise",
+            "muscleGroup": "SHOULDERS_LATERAL",
+            "category": "ISOLATION",
+            "equipmentType": "CABLE",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:cable_lateral_raise"
+          },
+          {
+            "name": "Cable Crunch",
+            "muscleGroup": "ABS",
+            "category": "ISOLATION",
+            "equipmentType": "CABLE",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:cable_crunch"
+          },
+          {
+            "name": "Cable Curl",
+            "muscleGroup": "BICEPS",
+            "category": "ISOLATION",
+            "equipmentType": "CABLE",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:cable_curl"
+          },
+          {
+            "name": "Cable Triceps Extension",
+            "muscleGroup": "TRICEPS",
+            "category": "ISOLATION",
+            "equipmentType": "CABLE",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:cable_triceps_extension"
+          },
+          {
+            "name": "Standing Calf Raise",
+            "muscleGroup": "CALVES",
+            "category": "ISOLATION",
+            "equipmentType": "BODYWEIGHT",
+            "usesBodyweight": true,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:standing_calf_raise"
+          },
+          {
+            "name": "Leg Extension",
+            "muscleGroup": "QUADS",
+            "category": "ISOLATION",
+            "equipmentType": "MACHINE",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:leg_extension"
+          },
+          {
+            "name": "Leg Curl",
+            "muscleGroup": "HAMSTRINGS",
+            "category": "ISOLATION",
+            "equipmentType": "MACHINE",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:leg_curl"
+          }
+        ],
+        "estimatedDurationMin": 63,
+        "lowerBodyDemand": true
+      }
+    ]
+  },
+  "loadGuidance": [
+    {
+      "catalogKey": "bench_press",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "barbell_row",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "overhead_press",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "pull_up",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "cable_lateral_raise",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "cable_crunch",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "cable_curl",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "cable_triceps_extension",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "standing_calf_raise",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "leg_extension",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "back_squat",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "romanian_deadlift",
+      "source": "USER_REPORTED",
+      "initialLoadKg": 120
+    },
+    {
+      "catalogKey": "leg_curl",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    }
+  ],
+  "nutrition": {
+    "caloriesKcal": {
+      "min": 3100,
+      "max": 3100
+    },
+    "proteinG": {
+      "min": 140,
+      "max": 140
+    },
+    "fatG": {
+      "min": 85,
+      "max": 85
+    },
+    "carbsG": {
+      "min": 445,
+      "max": 445
+    },
+    "meals": [
+      {
+        "key": "BREAKFAST",
+        "caloriesKcal": {
+          "min": 780,
+          "max": 780
+        },
+        "proteinG": {
+          "min": 35,
+          "max": 35
+        },
+        "carbsG": {
+          "min": 89,
+          "max": 89
+        },
+        "fatG": {
+          "min": 26,
+          "max": 26
+        }
+      },
+      {
+        "key": "LUNCH",
+        "caloriesKcal": {
+          "min": 930,
+          "max": 930
+        },
+        "proteinG": {
+          "min": 39,
+          "max": 39
+        },
+        "carbsG": {
+          "min": 134,
+          "max": 134
+        },
+        "fatG": {
+          "min": 26,
+          "max": 26
+        }
+      },
+      {
+        "key": "TRAINING",
+        "caloriesKcal": {
+          "min": 470,
+          "max": 470
+        },
+        "proteinG": {
+          "min": 31,
+          "max": 31
+        },
+        "carbsG": {
+          "min": 111,
+          "max": 111
+        },
+        "fatG": {
+          "min": 9,
+          "max": 9
+        }
+      },
+      {
+        "key": "DINNER",
+        "caloriesKcal": {
+          "min": 930,
+          "max": 930
+        },
+        "proteinG": {
+          "min": 35,
+          "max": 35
+        },
+        "carbsG": {
+          "min": 111,
+          "max": 111
+        },
+        "fatG": {
+          "min": 26,
+          "max": 26
+        }
+      }
+    ]
+  },
+  "cardio": {
+    "additionalWeeklyMin": 0,
+    "sessions": []
+  },
+  "sleep": {
+    "longTermMin": 420,
+    "longTermMax": 540,
+    "initialTargetMin": 465,
+    "initialTargetMax": 465,
+    "suggestedBedtimeMin": 1320,
+    "wakeTimeMin": 375
+  },
+  "schedule": {
+    "days": [
+      {
+        "dayOfWeek": 1,
+        "kind": "STRENGTH",
+        "strengthDayIndex": 0,
+        "cardioMin": 0
+      },
+      {
+        "dayOfWeek": 2,
+        "kind": "STRENGTH",
+        "strengthDayIndex": 1,
+        "cardioMin": 0
+      },
+      {
+        "dayOfWeek": 3,
+        "kind": "STRENGTH",
+        "strengthDayIndex": 2,
+        "cardioMin": 0
+      },
+      {
+        "dayOfWeek": 4,
+        "kind": "REST",
+        "strengthDayIndex": null,
+        "cardioMin": 0
+      },
+      {
+        "dayOfWeek": 5,
+        "kind": "STRENGTH",
+        "strengthDayIndex": 3,
+        "cardioMin": 0
+      },
+      {
+        "dayOfWeek": 6,
+        "kind": "STRENGTH",
+        "strengthDayIndex": 4,
+        "cardioMin": 0
+      },
+      {
+        "dayOfWeek": 7,
+        "kind": "REST",
+        "strengthDayIndex": null,
+        "cardioMin": 0
+      }
+    ]
+  },
+  "reasons": [
+    "ELIGIBLE_GENERAL_POPULATION",
+    "TARGET_DATE_MILESTONE",
+    "STRENGTH_DURATION_REDUCED",
+    "LOAD_CALIBRATION_REQUIRED",
+    "LOAD_USER_REPORTED",
+    "GOAL_RECOMP_MAINTENANCE",
+    "PROTEIN_GOAL_BASED",
+    "CARDIO_MAINTAIN_CURRENT",
+    "SLEEP_GENERAL_RANGE"
+  ]
+}"
+`;
+
+exports[`buildBaselinePlan determinism > matches the canonical snapshot for intermediate hypertrophy (female reference) 1`] = `
+"{
+  "schemaVersion": 1,
+  "rulesVersion": "baseline-v1",
+  "goal": {
+    "type": "HYPERTROPHY",
+    "desiredWeeklyRatePct": 0.2,
+    "feasibility": {
+      "status": "WITHIN_RANGE",
+      "earliestDate": "2027-03-22",
+      "latestDate": "2027-12-27",
+      "targetDate": "2027-06-01"
+    }
+  },
+  "strength": {
+    "split": "UPPER_LOWER",
+    "weeklyTargetSets": 8,
+    "introRir": null,
+    "introDurationDays": 0,
+    "steadyRir": 2,
+    "achievedSetsByMuscleGroup": {
+      "CHEST": 8,
+      "BACK_WIDTH": 8,
+      "BACK_THICKNESS": 8,
+      "SHOULDERS_FRONT": 8,
+      "QUADS": 8,
+      "HAMSTRINGS": 8
+    },
+    "days": [
+      {
+        "name": "Upper A",
+        "dayOfWeek": 2,
+        "exercises": [
+          {
+            "name": "Bench Press",
+            "muscleGroup": "CHEST",
+            "category": "COMPOUND",
+            "equipmentType": "BARBELL",
+            "usesBodyweight": false,
+            "targetSets": 4,
+            "targetRepsMin": 6,
+            "targetRepsMax": 10,
+            "targetRIR": 2,
+            "restSec": 150,
+            "notes": "catalog:bench_press"
+          },
+          {
+            "name": "Barbell Row",
+            "muscleGroup": "BACK_THICKNESS",
+            "category": "COMPOUND",
+            "equipmentType": "BARBELL",
+            "usesBodyweight": false,
+            "targetSets": 4,
+            "targetRepsMin": 6,
+            "targetRepsMax": 10,
+            "targetRIR": 2,
+            "restSec": 150,
+            "notes": "catalog:barbell_row"
+          },
+          {
+            "name": "Overhead Press",
+            "muscleGroup": "SHOULDERS_FRONT",
+            "category": "COMPOUND",
+            "equipmentType": "BARBELL",
+            "usesBodyweight": false,
+            "targetSets": 4,
+            "targetRepsMin": 6,
+            "targetRepsMax": 10,
+            "targetRIR": 2,
+            "restSec": 150,
+            "notes": "catalog:overhead_press"
+          },
+          {
+            "name": "Pull-up",
+            "muscleGroup": "BACK_WIDTH",
+            "category": "COMPOUND",
+            "equipmentType": "BODYWEIGHT",
+            "usesBodyweight": true,
+            "targetSets": 4,
+            "targetRepsMin": 6,
+            "targetRepsMax": 10,
+            "targetRIR": 2,
+            "restSec": 150,
+            "notes": "catalog:pull_up"
+          },
+          {
+            "name": "Cable Lateral Raise",
+            "muscleGroup": "SHOULDERS_LATERAL",
+            "category": "ISOLATION",
+            "equipmentType": "CABLE",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:cable_lateral_raise"
+          },
+          {
+            "name": "Cable Crunch",
+            "muscleGroup": "ABS",
+            "category": "ISOLATION",
+            "equipmentType": "CABLE",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:cable_crunch"
+          },
+          {
+            "name": "Cable Curl",
+            "muscleGroup": "BICEPS",
+            "category": "ISOLATION",
+            "equipmentType": "CABLE",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:cable_curl"
+          },
+          {
+            "name": "Cable Triceps Extension",
+            "muscleGroup": "TRICEPS",
+            "category": "ISOLATION",
+            "equipmentType": "CABLE",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:cable_triceps_extension"
+          },
+          {
+            "name": "Standing Calf Raise",
+            "muscleGroup": "CALVES",
+            "category": "ISOLATION",
+            "equipmentType": "BODYWEIGHT",
+            "usesBodyweight": true,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:standing_calf_raise"
+          }
+        ],
+        "estimatedDurationMin": 72,
+        "lowerBodyDemand": false
+      },
+      {
+        "name": "Lower A",
+        "dayOfWeek": 4,
+        "exercises": [
+          {
+            "name": "Back Squat",
+            "muscleGroup": "QUADS",
+            "category": "COMPOUND",
+            "equipmentType": "BARBELL",
+            "usesBodyweight": false,
+            "targetSets": 4,
+            "targetRepsMin": 6,
+            "targetRepsMax": 10,
+            "targetRIR": 2,
+            "restSec": 150,
+            "notes": "catalog:back_squat"
+          },
+          {
+            "name": "Romanian Deadlift",
+            "muscleGroup": "HAMSTRINGS",
+            "category": "COMPOUND",
+            "equipmentType": "BARBELL",
+            "usesBodyweight": false,
+            "targetSets": 4,
+            "targetRepsMin": 6,
+            "targetRepsMax": 10,
+            "targetRIR": 2,
+            "restSec": 150,
+            "notes": "catalog:romanian_deadlift"
+          },
+          {
+            "name": "Cable Lateral Raise",
+            "muscleGroup": "SHOULDERS_LATERAL",
+            "category": "ISOLATION",
+            "equipmentType": "CABLE",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:cable_lateral_raise"
+          },
+          {
+            "name": "Cable Crunch",
+            "muscleGroup": "ABS",
+            "category": "ISOLATION",
+            "equipmentType": "CABLE",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:cable_crunch"
+          },
+          {
+            "name": "Cable Curl",
+            "muscleGroup": "BICEPS",
+            "category": "ISOLATION",
+            "equipmentType": "CABLE",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:cable_curl"
+          },
+          {
+            "name": "Cable Triceps Extension",
+            "muscleGroup": "TRICEPS",
+            "category": "ISOLATION",
+            "equipmentType": "CABLE",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:cable_triceps_extension"
+          },
+          {
+            "name": "Standing Calf Raise",
+            "muscleGroup": "CALVES",
+            "category": "ISOLATION",
+            "equipmentType": "BODYWEIGHT",
+            "usesBodyweight": true,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:standing_calf_raise"
+          },
+          {
+            "name": "Leg Extension",
+            "muscleGroup": "QUADS",
+            "category": "ISOLATION",
+            "equipmentType": "MACHINE",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:leg_extension"
+          },
+          {
+            "name": "Leg Curl",
+            "muscleGroup": "HAMSTRINGS",
+            "category": "ISOLATION",
+            "equipmentType": "MACHINE",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:leg_curl"
+          }
+        ],
+        "estimatedDurationMin": 57,
+        "lowerBodyDemand": true
+      },
+      {
+        "name": "Upper B",
+        "dayOfWeek": 6,
+        "exercises": [
+          {
+            "name": "Dumbbell Bench Press",
+            "muscleGroup": "CHEST",
+            "category": "COMPOUND",
+            "equipmentType": "DUMBBELL",
+            "usesBodyweight": false,
+            "targetSets": 4,
+            "targetRepsMin": 6,
+            "targetRepsMax": 10,
+            "targetRIR": 2,
+            "restSec": 150,
+            "notes": "catalog:dumbbell_bench_press"
+          },
+          {
+            "name": "One-arm Dumbbell Row",
+            "muscleGroup": "BACK_THICKNESS",
+            "category": "COMPOUND",
+            "equipmentType": "DUMBBELL",
+            "usesBodyweight": false,
+            "targetSets": 4,
+            "targetRepsMin": 6,
+            "targetRepsMax": 10,
+            "targetRIR": 2,
+            "restSec": 150,
+            "notes": "catalog:one_arm_dumbbell_row"
+          },
+          {
+            "name": "Dumbbell Shoulder Press",
+            "muscleGroup": "SHOULDERS_FRONT",
+            "category": "COMPOUND",
+            "equipmentType": "DUMBBELL",
+            "usesBodyweight": false,
+            "targetSets": 4,
+            "targetRepsMin": 6,
+            "targetRepsMax": 10,
+            "targetRIR": 2,
+            "restSec": 150,
+            "notes": "catalog:dumbbell_shoulder_press"
+          },
+          {
+            "name": "Lat Pulldown",
+            "muscleGroup": "BACK_WIDTH",
+            "category": "COMPOUND",
+            "equipmentType": "MACHINE",
+            "usesBodyweight": false,
+            "targetSets": 4,
+            "targetRepsMin": 6,
+            "targetRepsMax": 10,
+            "targetRIR": 2,
+            "restSec": 150,
+            "notes": "catalog:lat_pulldown"
+          },
+          {
+            "name": "Dumbbell Lateral Raise",
+            "muscleGroup": "SHOULDERS_LATERAL",
+            "category": "ISOLATION",
+            "equipmentType": "DUMBBELL",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:dumbbell_lateral_raise"
+          },
+          {
+            "name": "Plank",
+            "muscleGroup": "ABS",
+            "category": "ISOLATION",
+            "equipmentType": "BODYWEIGHT",
+            "usesBodyweight": true,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:plank"
+          },
+          {
+            "name": "Dumbbell Curl",
+            "muscleGroup": "BICEPS",
+            "category": "ISOLATION",
+            "equipmentType": "DUMBBELL",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:dumbbell_curl"
+          },
+          {
+            "name": "Dumbbell Overhead Extension",
+            "muscleGroup": "TRICEPS",
+            "category": "ISOLATION",
+            "equipmentType": "DUMBBELL",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:dumbbell_overhead_extension"
+          },
+          {
+            "name": "Dumbbell Calf Raise",
+            "muscleGroup": "CALVES",
+            "category": "ISOLATION",
+            "equipmentType": "DUMBBELL",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:dumbbell_calf_raise"
+          }
+        ],
+        "estimatedDurationMin": 72,
+        "lowerBodyDemand": false
+      },
+      {
+        "name": "Lower B",
+        "dayOfWeek": 7,
+        "exercises": [
+          {
+            "name": "Goblet Squat",
+            "muscleGroup": "QUADS",
+            "category": "COMPOUND",
+            "equipmentType": "DUMBBELL",
+            "usesBodyweight": false,
+            "targetSets": 4,
+            "targetRepsMin": 6,
+            "targetRepsMax": 10,
+            "targetRIR": 2,
+            "restSec": 150,
+            "notes": "catalog:goblet_squat"
+          },
+          {
+            "name": "Dumbbell Romanian Deadlift",
+            "muscleGroup": "HAMSTRINGS",
+            "category": "COMPOUND",
+            "equipmentType": "DUMBBELL",
+            "usesBodyweight": false,
+            "targetSets": 4,
+            "targetRepsMin": 6,
+            "targetRepsMax": 10,
+            "targetRIR": 2,
+            "restSec": 150,
+            "notes": "catalog:dumbbell_romanian_deadlift"
+          },
+          {
+            "name": "Dumbbell Lateral Raise",
+            "muscleGroup": "SHOULDERS_LATERAL",
+            "category": "ISOLATION",
+            "equipmentType": "DUMBBELL",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:dumbbell_lateral_raise"
+          },
+          {
+            "name": "Plank",
+            "muscleGroup": "ABS",
+            "category": "ISOLATION",
+            "equipmentType": "BODYWEIGHT",
+            "usesBodyweight": true,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:plank"
+          },
+          {
+            "name": "Dumbbell Curl",
+            "muscleGroup": "BICEPS",
+            "category": "ISOLATION",
+            "equipmentType": "DUMBBELL",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:dumbbell_curl"
+          },
+          {
+            "name": "Dumbbell Overhead Extension",
+            "muscleGroup": "TRICEPS",
+            "category": "ISOLATION",
+            "equipmentType": "DUMBBELL",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:dumbbell_overhead_extension"
+          },
+          {
+            "name": "Dumbbell Calf Raise",
+            "muscleGroup": "CALVES",
+            "category": "ISOLATION",
+            "equipmentType": "DUMBBELL",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:dumbbell_calf_raise"
+          },
+          {
+            "name": "Reverse Lunge",
+            "muscleGroup": "QUADS",
+            "category": "ISOLATION",
+            "equipmentType": "BODYWEIGHT",
+            "usesBodyweight": true,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:reverse_lunge"
+          },
+          {
+            "name": "Sliding Leg Curl",
+            "muscleGroup": "HAMSTRINGS",
+            "category": "ISOLATION",
+            "equipmentType": "BODYWEIGHT",
+            "usesBodyweight": true,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:sliding_leg_curl"
+          }
+        ],
+        "estimatedDurationMin": 57,
+        "lowerBodyDemand": true
+      }
+    ]
+  },
+  "loadGuidance": [
+    {
+      "catalogKey": "bench_press",
+      "source": "USER_REPORTED",
+      "initialLoadKg": 45
+    },
+    {
+      "catalogKey": "barbell_row",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "overhead_press",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "pull_up",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "cable_lateral_raise",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "cable_crunch",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "cable_curl",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "cable_triceps_extension",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "standing_calf_raise",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "back_squat",
+      "source": "USER_REPORTED",
+      "initialLoadKg": 70
+    },
+    {
+      "catalogKey": "romanian_deadlift",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "leg_extension",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "leg_curl",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "dumbbell_bench_press",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "one_arm_dumbbell_row",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "dumbbell_shoulder_press",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "lat_pulldown",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "dumbbell_lateral_raise",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "plank",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "dumbbell_curl",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "dumbbell_overhead_extension",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "dumbbell_calf_raise",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "goblet_squat",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "dumbbell_romanian_deadlift",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "reverse_lunge",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "sliding_leg_curl",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    }
+  ],
+  "nutrition": {
+    "caloriesKcal": {
+      "min": 2200,
+      "max": 2200
+    },
+    "proteinG": {
+      "min": 95,
+      "max": 95
+    },
+    "fatG": {
+      "min": 60,
+      "max": 60
+    },
+    "carbsG": {
+      "min": 315,
+      "max": 315
+    },
+    "meals": [
+      {
+        "key": "BREAKFAST",
+        "caloriesKcal": {
+          "min": 550,
+          "max": 550
+        },
+        "proteinG": {
+          "min": 24,
+          "max": 24
+        },
+        "carbsG": {
+          "min": 63,
+          "max": 63
+        },
+        "fatG": {
+          "min": 18,
+          "max": 18
+        }
+      },
+      {
+        "key": "LUNCH",
+        "caloriesKcal": {
+          "min": 660,
+          "max": 660
+        },
+        "proteinG": {
+          "min": 27,
+          "max": 27
+        },
+        "carbsG": {
+          "min": 95,
+          "max": 95
+        },
+        "fatG": {
+          "min": 18,
+          "max": 18
+        }
+      },
+      {
+        "key": "TRAINING",
+        "caloriesKcal": {
+          "min": 330,
+          "max": 330
+        },
+        "proteinG": {
+          "min": 21,
+          "max": 21
+        },
+        "carbsG": {
+          "min": 79,
+          "max": 79
+        },
+        "fatG": {
+          "min": 6,
+          "max": 6
+        }
+      },
+      {
+        "key": "DINNER",
+        "caloriesKcal": {
+          "min": 660,
+          "max": 660
+        },
+        "proteinG": {
+          "min": 24,
+          "max": 24
+        },
+        "carbsG": {
+          "min": 79,
+          "max": 79
+        },
+        "fatG": {
+          "min": 18,
+          "max": 18
+        }
+      }
+    ]
+  },
+  "cardio": {
+    "additionalWeeklyMin": 60,
+    "sessions": [
+      {
+        "dayOfWeek": 1,
+        "durationMin": 20,
+        "mode": "LOW_IMPACT",
+        "intensity": "MODERATE",
+        "rpeMin": 3,
+        "rpeMax": 5
+      },
+      {
+        "dayOfWeek": 3,
+        "durationMin": 20,
+        "mode": "LOW_IMPACT",
+        "intensity": "MODERATE",
+        "rpeMin": 3,
+        "rpeMax": 5
+      },
+      {
+        "dayOfWeek": 5,
+        "durationMin": 20,
+        "mode": "LOW_IMPACT",
+        "intensity": "MODERATE",
+        "rpeMin": 3,
+        "rpeMax": 5
+      }
+    ]
+  },
+  "sleep": {
+    "longTermMin": 420,
+    "longTermMax": 540,
+    "initialTargetMin": 435,
+    "initialTargetMax": 435,
+    "suggestedBedtimeMin": 1365,
+    "wakeTimeMin": 390
+  },
+  "schedule": {
+    "days": [
+      {
+        "dayOfWeek": 1,
+        "kind": "CARDIO",
+        "strengthDayIndex": null,
+        "cardioMin": 20
+      },
+      {
+        "dayOfWeek": 2,
+        "kind": "STRENGTH",
+        "strengthDayIndex": 0,
+        "cardioMin": 0
+      },
+      {
+        "dayOfWeek": 3,
+        "kind": "CARDIO",
+        "strengthDayIndex": null,
+        "cardioMin": 20
+      },
+      {
+        "dayOfWeek": 4,
+        "kind": "STRENGTH",
+        "strengthDayIndex": 1,
+        "cardioMin": 0
+      },
+      {
+        "dayOfWeek": 5,
+        "kind": "CARDIO",
+        "strengthDayIndex": null,
+        "cardioMin": 20
+      },
+      {
+        "dayOfWeek": 6,
+        "kind": "STRENGTH",
+        "strengthDayIndex": 2,
+        "cardioMin": 0
+      },
+      {
+        "dayOfWeek": 7,
+        "kind": "STRENGTH",
+        "strengthDayIndex": 3,
+        "cardioMin": 0
+      }
+    ]
+  },
+  "reasons": [
+    "ELIGIBLE_GENERAL_POPULATION",
+    "TARGET_DATE_WITHIN_RANGE",
+    "STRENGTH_DURATION_REDUCED",
+    "LOAD_USER_REPORTED",
+    "LOAD_CALIBRATION_REQUIRED",
+    "GOAL_HYPERTROPHY_SURPLUS",
+    "PROTEIN_GOAL_BASED",
+    "CARDIO_FILL_TO_150",
+    "SLEEP_GENERAL_RANGE"
+  ]
+}"
+`;
+
+exports[`buildBaselinePlan determinism > matches the canonical snapshot for novice fat loss (unspecified reference) 1`] = `
+"{
+  "schemaVersion": 1,
+  "rulesVersion": "baseline-v1",
+  "goal": {
+    "type": "FAT_LOSS",
+    "desiredWeeklyRatePct": -0.5,
+    "feasibility": {
+      "status": "WITHIN_RANGE",
+      "earliestDate": "2026-12-21",
+      "latestDate": "2027-06-21",
+      "targetDate": "2027-03-01"
+    }
+  },
+  "strength": {
+    "split": "FULL_BODY_ABC",
+    "weeklyTargetSets": 6,
+    "introRir": 3,
+    "introDurationDays": 14,
+    "steadyRir": 2,
+    "achievedSetsByMuscleGroup": {
+      "CHEST": 6,
+      "BACK_WIDTH": 6,
+      "BACK_THICKNESS": 6,
+      "SHOULDERS_FRONT": 6,
+      "QUADS": 6,
+      "HAMSTRINGS": 6
+    },
+    "days": [
+      {
+        "name": "Full Body A",
+        "dayOfWeek": 1,
+        "exercises": [
+          {
+            "name": "Goblet Squat",
+            "muscleGroup": "QUADS",
+            "category": "COMPOUND",
+            "equipmentType": "DUMBBELL",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 6,
+            "targetRepsMax": 10,
+            "targetRIR": 2,
+            "restSec": 150,
+            "notes": "catalog:goblet_squat"
+          },
+          {
+            "name": "Dumbbell Romanian Deadlift",
+            "muscleGroup": "HAMSTRINGS",
+            "category": "COMPOUND",
+            "equipmentType": "DUMBBELL",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 6,
+            "targetRepsMax": 10,
+            "targetRIR": 2,
+            "restSec": 150,
+            "notes": "catalog:dumbbell_romanian_deadlift"
+          },
+          {
+            "name": "Dumbbell Bench Press",
+            "muscleGroup": "CHEST",
+            "category": "COMPOUND",
+            "equipmentType": "DUMBBELL",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 6,
+            "targetRepsMax": 10,
+            "targetRIR": 2,
+            "restSec": 150,
+            "notes": "catalog:dumbbell_bench_press"
+          },
+          {
+            "name": "One-arm Dumbbell Row",
+            "muscleGroup": "BACK_THICKNESS",
+            "category": "COMPOUND",
+            "equipmentType": "DUMBBELL",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 6,
+            "targetRepsMax": 10,
+            "targetRIR": 2,
+            "restSec": 150,
+            "notes": "catalog:one_arm_dumbbell_row"
+          },
+          {
+            "name": "Dumbbell Shoulder Press",
+            "muscleGroup": "SHOULDERS_FRONT",
+            "category": "COMPOUND",
+            "equipmentType": "DUMBBELL",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 6,
+            "targetRepsMax": 10,
+            "targetRIR": 2,
+            "restSec": 150,
+            "notes": "catalog:dumbbell_shoulder_press"
+          },
+          {
+            "name": "Pull-up",
+            "muscleGroup": "BACK_WIDTH",
+            "category": "COMPOUND",
+            "equipmentType": "BODYWEIGHT",
+            "usesBodyweight": true,
+            "targetSets": 2,
+            "targetRepsMin": 6,
+            "targetRepsMax": 10,
+            "targetRIR": 2,
+            "restSec": 150,
+            "notes": "catalog:pull_up"
+          },
+          {
+            "name": "Dumbbell Lateral Raise",
+            "muscleGroup": "SHOULDERS_LATERAL",
+            "category": "ISOLATION",
+            "equipmentType": "DUMBBELL",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:dumbbell_lateral_raise"
+          },
+          {
+            "name": "Plank",
+            "muscleGroup": "ABS",
+            "category": "ISOLATION",
+            "equipmentType": "BODYWEIGHT",
+            "usesBodyweight": true,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:plank"
+          },
+          {
+            "name": "Dumbbell Curl",
+            "muscleGroup": "BICEPS",
+            "category": "ISOLATION",
+            "equipmentType": "DUMBBELL",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:dumbbell_curl"
+          },
+          {
+            "name": "Dumbbell Overhead Extension",
+            "muscleGroup": "TRICEPS",
+            "category": "ISOLATION",
+            "equipmentType": "DUMBBELL",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:dumbbell_overhead_extension"
+          },
+          {
+            "name": "Standing Calf Raise",
+            "muscleGroup": "CALVES",
+            "category": "ISOLATION",
+            "equipmentType": "BODYWEIGHT",
+            "usesBodyweight": true,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:standing_calf_raise"
+          }
+        ],
+        "estimatedDurationMin": 58,
+        "lowerBodyDemand": true
+      },
+      {
+        "name": "Full Body B",
+        "dayOfWeek": 3,
+        "exercises": [
+          {
+            "name": "Bodyweight Squat",
+            "muscleGroup": "QUADS",
+            "category": "COMPOUND",
+            "equipmentType": "BODYWEIGHT",
+            "usesBodyweight": true,
+            "targetSets": 2,
+            "targetRepsMin": 6,
+            "targetRepsMax": 10,
+            "targetRIR": 2,
+            "restSec": 150,
+            "notes": "catalog:bodyweight_squat"
+          },
+          {
+            "name": "Hip Bridge",
+            "muscleGroup": "HAMSTRINGS",
+            "category": "COMPOUND",
+            "equipmentType": "BODYWEIGHT",
+            "usesBodyweight": true,
+            "targetSets": 2,
+            "targetRepsMin": 6,
+            "targetRepsMax": 10,
+            "targetRIR": 2,
+            "restSec": 150,
+            "notes": "catalog:hip_bridge"
+          },
+          {
+            "name": "Push-up",
+            "muscleGroup": "CHEST",
+            "category": "COMPOUND",
+            "equipmentType": "BODYWEIGHT",
+            "usesBodyweight": true,
+            "targetSets": 2,
+            "targetRepsMin": 6,
+            "targetRepsMax": 10,
+            "targetRIR": 2,
+            "restSec": 150,
+            "notes": "catalog:push_up"
+          },
+          {
+            "name": "Inverted Row",
+            "muscleGroup": "BACK_THICKNESS",
+            "category": "COMPOUND",
+            "equipmentType": "BODYWEIGHT",
+            "usesBodyweight": true,
+            "targetSets": 2,
+            "targetRepsMin": 6,
+            "targetRepsMax": 10,
+            "targetRIR": 2,
+            "restSec": 150,
+            "notes": "catalog:inverted_row"
+          },
+          {
+            "name": "Pike Push-up",
+            "muscleGroup": "SHOULDERS_FRONT",
+            "category": "COMPOUND",
+            "equipmentType": "BODYWEIGHT",
+            "usesBodyweight": true,
+            "targetSets": 2,
+            "targetRepsMin": 6,
+            "targetRepsMax": 10,
+            "targetRIR": 2,
+            "restSec": 150,
+            "notes": "catalog:pike_push_up"
+          },
+          {
+            "name": "Pull-up",
+            "muscleGroup": "BACK_WIDTH",
+            "category": "COMPOUND",
+            "equipmentType": "BODYWEIGHT",
+            "usesBodyweight": true,
+            "targetSets": 2,
+            "targetRepsMin": 6,
+            "targetRepsMax": 10,
+            "targetRIR": 2,
+            "restSec": 150,
+            "notes": "catalog:pull_up"
+          },
+          {
+            "name": "Dumbbell Lateral Raise",
+            "muscleGroup": "SHOULDERS_LATERAL",
+            "category": "ISOLATION",
+            "equipmentType": "DUMBBELL",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:dumbbell_lateral_raise"
+          },
+          {
+            "name": "Dead Bug",
+            "muscleGroup": "ABS",
+            "category": "ISOLATION",
+            "equipmentType": "BODYWEIGHT",
+            "usesBodyweight": true,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:dead_bug"
+          },
+          {
+            "name": "Bodyweight Curl",
+            "muscleGroup": "BICEPS",
+            "category": "ISOLATION",
+            "equipmentType": "BODYWEIGHT",
+            "usesBodyweight": true,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:bodyweight_curl"
+          },
+          {
+            "name": "Close-grip Push-up",
+            "muscleGroup": "TRICEPS",
+            "category": "ISOLATION",
+            "equipmentType": "BODYWEIGHT",
+            "usesBodyweight": true,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:close_grip_push_up"
+          },
+          {
+            "name": "Dumbbell Calf Raise",
+            "muscleGroup": "CALVES",
+            "category": "ISOLATION",
+            "equipmentType": "DUMBBELL",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:dumbbell_calf_raise"
+          }
+        ],
+        "estimatedDurationMin": 58,
+        "lowerBodyDemand": true
+      },
+      {
+        "name": "Full Body C",
+        "dayOfWeek": 5,
+        "exercises": [
+          {
+            "name": "Goblet Squat",
+            "muscleGroup": "QUADS",
+            "category": "COMPOUND",
+            "equipmentType": "DUMBBELL",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 6,
+            "targetRepsMax": 10,
+            "targetRIR": 2,
+            "restSec": 150,
+            "notes": "catalog:goblet_squat"
+          },
+          {
+            "name": "Dumbbell Romanian Deadlift",
+            "muscleGroup": "HAMSTRINGS",
+            "category": "COMPOUND",
+            "equipmentType": "DUMBBELL",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 6,
+            "targetRepsMax": 10,
+            "targetRIR": 2,
+            "restSec": 150,
+            "notes": "catalog:dumbbell_romanian_deadlift"
+          },
+          {
+            "name": "Dumbbell Bench Press",
+            "muscleGroup": "CHEST",
+            "category": "COMPOUND",
+            "equipmentType": "DUMBBELL",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 6,
+            "targetRepsMax": 10,
+            "targetRIR": 2,
+            "restSec": 150,
+            "notes": "catalog:dumbbell_bench_press"
+          },
+          {
+            "name": "One-arm Dumbbell Row",
+            "muscleGroup": "BACK_THICKNESS",
+            "category": "COMPOUND",
+            "equipmentType": "DUMBBELL",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 6,
+            "targetRepsMax": 10,
+            "targetRIR": 2,
+            "restSec": 150,
+            "notes": "catalog:one_arm_dumbbell_row"
+          },
+          {
+            "name": "Dumbbell Shoulder Press",
+            "muscleGroup": "SHOULDERS_FRONT",
+            "category": "COMPOUND",
+            "equipmentType": "DUMBBELL",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 6,
+            "targetRepsMax": 10,
+            "targetRIR": 2,
+            "restSec": 150,
+            "notes": "catalog:dumbbell_shoulder_press"
+          },
+          {
+            "name": "Pull-up",
+            "muscleGroup": "BACK_WIDTH",
+            "category": "COMPOUND",
+            "equipmentType": "BODYWEIGHT",
+            "usesBodyweight": true,
+            "targetSets": 2,
+            "targetRepsMin": 6,
+            "targetRepsMax": 10,
+            "targetRIR": 2,
+            "restSec": 150,
+            "notes": "catalog:pull_up"
+          },
+          {
+            "name": "Dumbbell Lateral Raise",
+            "muscleGroup": "SHOULDERS_LATERAL",
+            "category": "ISOLATION",
+            "equipmentType": "DUMBBELL",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:dumbbell_lateral_raise"
+          },
+          {
+            "name": "Plank",
+            "muscleGroup": "ABS",
+            "category": "ISOLATION",
+            "equipmentType": "BODYWEIGHT",
+            "usesBodyweight": true,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:plank"
+          },
+          {
+            "name": "Dumbbell Curl",
+            "muscleGroup": "BICEPS",
+            "category": "ISOLATION",
+            "equipmentType": "DUMBBELL",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:dumbbell_curl"
+          },
+          {
+            "name": "Dumbbell Overhead Extension",
+            "muscleGroup": "TRICEPS",
+            "category": "ISOLATION",
+            "equipmentType": "DUMBBELL",
+            "usesBodyweight": false,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:dumbbell_overhead_extension"
+          },
+          {
+            "name": "Standing Calf Raise",
+            "muscleGroup": "CALVES",
+            "category": "ISOLATION",
+            "equipmentType": "BODYWEIGHT",
+            "usesBodyweight": true,
+            "targetSets": 2,
+            "targetRepsMin": 10,
+            "targetRepsMax": 15,
+            "targetRIR": 2,
+            "restSec": 75,
+            "notes": "catalog:standing_calf_raise"
+          }
+        ],
+        "estimatedDurationMin": 58,
+        "lowerBodyDemand": true
+      }
+    ]
+  },
+  "loadGuidance": [
+    {
+      "catalogKey": "goblet_squat",
+      "source": "USER_REPORTED",
+      "initialLoadKg": 24
+    },
+    {
+      "catalogKey": "dumbbell_romanian_deadlift",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "dumbbell_bench_press",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "one_arm_dumbbell_row",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "dumbbell_shoulder_press",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "pull_up",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "dumbbell_lateral_raise",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "plank",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "dumbbell_curl",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "dumbbell_overhead_extension",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "standing_calf_raise",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "bodyweight_squat",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "hip_bridge",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "push_up",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "inverted_row",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "pike_push_up",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "dead_bug",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "bodyweight_curl",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "close_grip_push_up",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    },
+    {
+      "catalogKey": "dumbbell_calf_raise",
+      "source": "CALIBRATION",
+      "initialLoadKg": null
+    }
+  ],
+  "nutrition": {
+    "caloriesKcal": {
+      "min": 1600,
+      "max": 1800
+    },
+    "proteinG": {
+      "min": 150,
+      "max": 150
+    },
+    "fatG": {
+      "min": 50,
+      "max": 50
+    },
+    "carbsG": {
+      "min": 145,
+      "max": 185
+    },
+    "meals": [
+      {
+        "key": "BREAKFAST",
+        "caloriesKcal": {
+          "min": 400,
+          "max": 450
+        },
+        "proteinG": {
+          "min": 38,
+          "max": 38
+        },
+        "carbsG": {
+          "min": 29,
+          "max": 37
+        },
+        "fatG": {
+          "min": 15,
+          "max": 15
+        }
+      },
+      {
+        "key": "LUNCH",
+        "caloriesKcal": {
+          "min": 480,
+          "max": 540
+        },
+        "proteinG": {
+          "min": 42,
+          "max": 42
+        },
+        "carbsG": {
+          "min": 44,
+          "max": 56
+        },
+        "fatG": {
+          "min": 15,
+          "max": 15
+        }
+      },
+      {
+        "key": "TRAINING",
+        "caloriesKcal": {
+          "min": 240,
+          "max": 270
+        },
+        "proteinG": {
+          "min": 33,
+          "max": 33
+        },
+        "carbsG": {
+          "min": 36,
+          "max": 46
+        },
+        "fatG": {
+          "min": 5,
+          "max": 5
+        }
+      },
+      {
+        "key": "DINNER",
+        "caloriesKcal": {
+          "min": 480,
+          "max": 540
+        },
+        "proteinG": {
+          "min": 38,
+          "max": 38
+        },
+        "carbsG": {
+          "min": 36,
+          "max": 46
+        },
+        "fatG": {
+          "min": 15,
+          "max": 15
+        }
+      }
+    ]
+  },
+  "cardio": {
+    "additionalWeeklyMin": 40,
+    "sessions": [
+      {
+        "dayOfWeek": 2,
+        "durationMin": 20,
+        "mode": "LOW_IMPACT",
+        "intensity": "MODERATE",
+        "rpeMin": 3,
+        "rpeMax": 5
+      },
+      {
+        "dayOfWeek": 4,
+        "durationMin": 20,
+        "mode": "LOW_IMPACT",
+        "intensity": "MODERATE",
+        "rpeMin": 3,
+        "rpeMax": 5
+      }
+    ]
+  },
+  "sleep": {
+    "longTermMin": 420,
+    "longTermMax": 540,
+    "initialTargetMin": 405,
+    "initialTargetMax": 405,
+    "suggestedBedtimeMin": 1425,
+    "wakeTimeMin": 420
+  },
+  "schedule": {
+    "days": [
+      {
+        "dayOfWeek": 1,
+        "kind": "STRENGTH",
+        "strengthDayIndex": 0,
+        "cardioMin": 0
+      },
+      {
+        "dayOfWeek": 2,
+        "kind": "CARDIO",
+        "strengthDayIndex": null,
+        "cardioMin": 20
+      },
+      {
+        "dayOfWeek": 3,
+        "kind": "STRENGTH",
+        "strengthDayIndex": 1,
+        "cardioMin": 0
+      },
+      {
+        "dayOfWeek": 4,
+        "kind": "CARDIO",
+        "strengthDayIndex": null,
+        "cardioMin": 20
+      },
+      {
+        "dayOfWeek": 5,
+        "kind": "STRENGTH",
+        "strengthDayIndex": 2,
+        "cardioMin": 0
+      },
+      {
+        "dayOfWeek": 6,
+        "kind": "REST",
+        "strengthDayIndex": null,
+        "cardioMin": 0
+      },
+      {
+        "dayOfWeek": 7,
+        "kind": "REST",
+        "strengthDayIndex": null,
+        "cardioMin": 0
+      }
+    ]
+  },
+  "reasons": [
+    "ELIGIBLE_GENERAL_POPULATION",
+    "TARGET_DATE_WITHIN_RANGE",
+    "STRENGTH_NOVICE_RIR_BUFFER",
+    "STRENGTH_DURATION_REDUCED",
+    "LOAD_USER_REPORTED",
+    "LOAD_CALIBRATION_REQUIRED",
+    "ENERGY_REFERENCE_RANGE",
+    "GOAL_FAT_LOSS_DEFICIT",
+    "PROTEIN_GOAL_BASED",
+    "FAT_MINIMUM_APPLIED",
+    "CARDIO_BUILD_TO_BASELINE",
+    "SLEEP_ADD_30_MINUTES"
+  ]
+}"
+`;

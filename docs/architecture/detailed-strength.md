@@ -1,0 +1,11 @@
+# Minimal model-owned strength planning
+
+Scope: weekly reviews only. Initial onboarding drafts and cardio/nutrition/sleep retain their existing generators. The weekly strategy and deterministic base remain inputs, but the final strength exercise selection, sets, reps, RIR, rest and evidence-backed starting loads come from a second structured model candidate.
+
+The candidate is validated before persistence. Canonical exercise metadata, muscle totals and duration estimates are computed from the accepted candidate. No invalid value is clipped or silently replaced. One repair request receives the validation error; a second failure returns WEEKLY_MODEL_UNAVAILABLE and leaves the active plan unchanged. The ordinary preview/confirmation/version flow remains unchanged; no schema migration is needed for this addition.
+
+Checks cover exact strategy weekdays, duplicate exercises, equipment and explicit exclusions, primary movement-pattern coverage relative to the base, combined strength/cardio duration, reduced-recovery RIR and volume, and consistent load per catalog exercise. A numeric load must reference the matching supplied load-guidance snapshot and cannot exceed it. Missing evidence must use null/calibration. This minimal release intentionally supports keeping/reducing loads, not automatic progression or inferred one-rep maxima. Historical evidence freshness and reliability still have the limitations of the existing load-evidence module.
+
+Bounds (1–6 sets, 1–30 reps, RIR 1–5, rest 30–300 seconds, at most 10 exercises/day) are engineering limits, not individualized medical or exercise-science guarantees. Clinical quality, heterogeneous per-day equipment planning and formal model-vs-baseline quality comparisons are outside this change. Existing evaluation scores do not measure this new detail-generation step.
+
+Live smoke: run `scripts/weekly-strategy-live-smoke.eval.ts` with `DETAILED_STRENGTH_SMOKE=true`. The travel/recovery and missing-history cases both passed, using production strategy, detailed candidate generation and validation on synthetic evidence. Results are isolated in `docs/evals/detailed-strength/`; cost was approximately $0.005412. This is functional smoke coverage, not comparative plan-quality validation. Database integration remains unverified because the local database is unavailable.

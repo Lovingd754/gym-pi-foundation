@@ -1,0 +1,969 @@
+// GymPi - Database schema
+// Single-user, weightlifting tracking and Claude AI coach.
+
+generator client {
+  provider     = "prisma-client"
+  output       = "./generated"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                        String                 @id @default(cuid())
+  email                     String                 @unique
+  passwordHash              String
+  // Bodyweight in kg, used to compute the effective tonnage on bodyweight
+  // exercises (Set.weight = added load, always >= 0; the input schemas clamp
+  // it). Null = not filled in yet, so no bodyweight bonus is applied
+  // (backward-safe).
+  bodyweight                Float?
+  // Optional profile, used to tailor the AI coach output to the user.
+  displayName               String?
+  sex                       Sex?
+  heightCm                  Int?
+  goal                      TrainingGoal?
+  weeklyFrequency           Int?
+  // Preferred weight unit for display and input. Data is always stored in kg;
+  // this only affects the presentation layer. Default keeps existing users on kg.
+  unit                      WeightUnit             @default(KG)
+  // End of the user's planned deload week (issue #112). While this timestamp
+  // is in the future, load suggestions apply the planned-deload step-down.
+  // Null or in the past = no planned deload (backward-safe additive column).
+  deloadUntil               DateTime?
+  // Free-text note the user writes to their AI coach (issue #188): their own
+  // current context for the coach to weigh - injuries, illness, life
+  // constraints ("shoulder is bothering me, go easy on pressing"). Input-side
+  // only and correctable by the user. Null = no note (backward-safe additive
+  // column); the set/clear route bounds it to 500 chars.
+  coachNote                 String?
+  // Per-user model choice (agent pivot): the provider and model this trainee
+  // wants their assistant to think with. Null means "whatever the deployment
+  // configured", which is what every new account starts on.
+  llmProvider               String?
+  llmModel                  String?
+  // Endpoint and key for an OpenAI-compatible provider the trainee supplies
+  // themselves - a relay, a gateway, a local server. Stored as written; never
+  // sent back to the browser, only reported as configured or not.
+  llmBaseUrl                String?
+  llmApiKey                 String?
+  // Weekly review (agent pivot): whether a plan that has run its week renews
+  // itself. On, the plan screen applies the review and explains what changed; off,
+  // it asks first. Either way the review is visible and the version history
+  // keeps the plan it replaced.
+  weeklyAutoReplan          Boolean                @default(true)
+  // Version of lib/exercise-catalog.ts this account's exercise library was
+  // last filled in from (agent pivot). A newer EXERCISE_CATALOG_VERSION means
+  // the catalog gained movements since this account was created, and the next
+  // page that lists exercises adds them (lib/exercise-catalog-sync.ts). 0 keeps
+  // every pre-existing account on the "fill the gaps" path.
+  exerciseCatalogVersion    Int                    @default(0)
+  fitnessOnboardingRequired Boolean                @default(true)
+  createdAt                 DateTime               @default(now())
+  programs                  Program[]
+  sessions                  Session[]
+  exercises                 Exercise[]
+  conversations             Conversation[]
+  agentConversations        AgentConversation[]
+  agentRuns                 AgentRun[]
+  agentMemories             AgentMemory[]
+  weeklyActivities          FitnessWeeklyActivities[]
+  agentPlanProposals        AgentPlanProposal[]
+  agentLogProposals         AgentLogProposal[]
+  readinessCheckins         ReadinessCheckin[]
+  exerciseGoals             ExerciseGoal[]
+  bodyweightEntries         BodyweightEntry[]
+  bodyMeasurements          BodyMeasurement[]
+  volumeTargets             VolumeTarget[]
+  progressPhotos            ProgressPhoto[]
+  gyms                      Gym[]                  @relation("GymOwner")
+  mcpAccessTokens           McpAccessToken[]
+  activeGymId               String?
+  activeGym                 Gym?                   @relation("ActiveGym", fields: [activeGymId], references: [id], onDelete: SetNull)
+  fitnessProfile            FitnessProfile?
+  healthScreenings          HealthScreening[]
+  fitnessGoals              FitnessGoal[]
+  fitnessPlanVersions       FitnessPlanVersion[]
+  fitnessPlanActivation     FitnessPlanActivation?
+}
+
+model FitnessWeeklyActivities {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  weekStart String
+  activities Json
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, weekStart])
+}
+
+model FitnessProfile {
+  id                         String                  @id @default(cuid())
+  userId                     String                  @unique
+  user                       User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ageYears                   Int
+  displaySex                 FitnessDisplaySex
+  energyEquationReference    EnergyEquationReference
+  bodyFatPct                 Float?
+  trainingAgeMonths          Int
+  weeklyFrequency            Int
+  availableWeekdays          Int[]
+  sessionDurationMin         Int
+  equipmentTypes             EquipmentType[]
+  recentMainLifts            Json
+  activityLevel              ActivityLevel
+  avgDailySteps              Int?
+  currentModerateActivityMin Int
+  habitualSleepMin           Int
+  bedtimeMin                 Int
+  wakeTimeMin                Int
+  timeZone                   String
+  // Soft constraints (agent pivot): the trainee's own words about what they
+  // want and what gets in the way. Read by the plan strategy step, never parsed
+  // into a number.
+  softConstraints            String?                 @db.Text
+  createdAt                  DateTime                @default(now())
+  updatedAt                  DateTime                @updatedAt
+  planVersions               FitnessPlanVersion[]
+}
+
+model HealthScreening {
+  id                    String               @id @default(cuid())
+  userId                String
+  user                  User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  screeningVersion      String
+  rulesVersion          String
+  answers               Json
+  status                EligibilityStatus
+  reasonCodes           String[]
+  attestedAt            DateTime
+  clearanceDate         DateTime?
+  clearanceUnrestricted Boolean?
+  clearanceRestrictions String?
+  expiresAt             DateTime?
+  createdAt             DateTime             @default(now())
+  planVersions          FitnessPlanVersion[]
+
+  @@index([userId, createdAt])
+}
+
+model FitnessGoal {
+  id                   String               @id @default(cuid())
+  userId               String
+  user                 User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type                 TrainingGoal
+  desiredWeeklyRatePct Float
+  targetWeightKg       Float?
+  targetDate           DateTime?
+  status               FitnessGoalStatus    @default(ACTIVE)
+  createdAt            DateTime             @default(now())
+  supersededAt         DateTime?
+  planVersions         FitnessPlanVersion[]
+
+  @@index([userId, status, createdAt])
+}
+
+model FitnessPlanVersion {
+  id                String                 @id @default(cuid())
+  userId            String
+  user              User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  profileId         String
+  profile           FitnessProfile         @relation(fields: [profileId], references: [id], onDelete: Restrict)
+  healthScreeningId String
+  healthScreening   HealthScreening        @relation(fields: [healthScreeningId], references: [id], onDelete: Restrict)
+  goalId            String
+  goal              FitnessGoal            @relation(fields: [goalId], references: [id], onDelete: Restrict)
+  version           Int
+  status            FitnessPlanStatus      @default(DRAFT)
+  rulesVersion      String
+  inputHash         String
+  profileUpdatedAt  DateTime
+  input             Json
+  content           Json
+  // The model-owned strategy this version's content was built with, plus the
+  // one-line rationale the trainee sees. Null means the neutral strategy (the
+  // deterministic plan), which is also what an older version predates.
+  strategy          Json?
+  programId         String?                @unique
+  program           Program?               @relation(fields: [programId], references: [id], onDelete: Restrict)
+  createdAt         DateTime               @default(now())
+  activatedAt       DateTime?
+  activation        FitnessPlanActivation?
+
+  @@unique([userId, version])
+  @@index([userId, status, createdAt])
+  @@index([userId, inputHash])
+}
+
+model FitnessPlanActivation {
+  userId        String              @id
+  user          User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  planVersionId String?             @unique
+  planVersion   FitnessPlanVersion? @relation(fields: [planVersionId], references: [id], onDelete: Restrict)
+  revision      Int                 @default(1)
+  activatedAt   DateTime            @default(now())
+  // The weekly review (agent pivot): which week the trainee's latest review
+  // covered, when it ran, and what it concluded. It lives on the activation row
+  // because it belongs to "the plan in use", and because a review that changed
+  // nothing still has to be remembered - otherwise every page load would redo
+  // it. Null = this plan has never been reviewed.
+  lastReviewWeek    String?
+  lastReviewedAt    DateTime?
+  lastReviewSummary Json?
+  updatedAt     DateTime            @updatedAt
+}
+
+// Personal access tokens for remote MCP clients such as ChatGPT. Only a
+// SHA-256 hash is stored; the raw token is shown once when it is created.
+model McpAccessToken {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  tokenHash   String    @unique
+  tokenPrefix String
+  canWrite    Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  lastUsedAt  DateTime?
+  revokedAt   DateTime?
+
+  @@index([userId, createdAt])
+}
+
+enum Sex {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum WeightUnit {
+  KG
+  LB
+}
+
+enum TrainingGoal {
+  HYPERTROPHY
+  STRENGTH
+  FAT_LOSS
+  RECOMP
+  GENERAL_FITNESS
+}
+
+enum EnergyEquationReference {
+  MALE
+  FEMALE
+  UNSPECIFIED
+}
+
+enum FitnessDisplaySex {
+  MALE
+  FEMALE
+  OTHER
+  PREFER_NOT_TO_SAY
+}
+
+enum ActivityLevel {
+  SEDENTARY
+  LIGHT
+  MODERATE
+  HIGH
+}
+
+enum EligibilityStatus {
+  ELIGIBLE
+  NEEDS_MEDICAL_CLEARANCE
+  URGENT_ACTION
+  TEMPORARY_HOLD
+  OUT_OF_SCOPE
+}
+
+enum FitnessGoalStatus {
+  ACTIVE
+  SUPERSEDED
+}
+
+enum FitnessPlanStatus {
+  DRAFT
+  ACTIVE
+  SUPERSEDED
+}
+
+enum InitialLoadSource {
+  APP_HISTORY
+  USER_REPORTED
+  CALIBRATION
+}
+
+// Conversational AI coach: a thread of messages with the trainee.
+model Conversation {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  title     String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  messages  Message[]
+
+  @@index([userId, updatedAt])
+}
+
+enum MessageRole {
+  USER
+  ASSISTANT
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role           MessageRole
+  content        String       @db.Text
+  createdAt      DateTime     @default(now())
+
+  @@index([conversationId, createdAt])
+}
+
+enum AgentMessageRole {
+  USER
+  ASSISTANT
+}
+
+enum AgentMessageStatus {
+  COMPLETE
+  INCOMPLETE
+}
+
+enum AgentRunKind {
+  CHAT
+  WEEKLY_REVIEW
+}
+
+enum AgentRunStatus {
+  RUNNING
+  COMPLETED
+  DEGRADED
+  CANCELLED
+  FAILED
+}
+
+enum AgentStopReason {
+  COMPLETED
+  CANCELLED
+  TIMEOUT
+  MODEL_LIMIT
+  TOOL_LIMIT
+  SAFETY_STOP
+  ERROR
+}
+
+enum ToolInvocationStatus {
+  STARTED
+  SUCCEEDED
+  FAILED
+  BLOCKED
+}
+
+model AgentConversation {
+  id        String         @id @default(cuid())
+  userId    String
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String?
+  // Long-thread compaction. `contextSummary` holds the folded digest of every
+  // message at or before `summarizedThrough`; a later run reads that digest as
+  // background and loads only the messages after that point, so a long thread
+  // costs the same as a short one instead of growing without bound.
+  contextSummary    String?   @db.Text
+  taskState         Json?
+  taskStateRevision Int       @default(0)
+  summarizedThrough DateTime?
+  summaryUpdatedAt  DateTime?
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  messages  AgentMessage[]
+  runs      AgentRun[]
+  memories  AgentMemory[]
+  planProposals AgentPlanProposal[]
+  logProposals  AgentLogProposal[]
+
+  @@index([userId, updatedAt])
+}
+
+// A durable fact about the trainee that the agent asked to keep (issue: agent
+// chat pivot). The two-step status is the whole point: the model may only
+// create a PENDING proposal, and nothing reaches the agent's context until the
+// trainee confirms it. A speculative suggestion can therefore never come back
+// later as a stored "fact" the trainee never agreed to.
+model AgentMemory {
+  id                   String                @id @default(cuid())
+  userId               String
+  user                 User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // One short sentence in the trainee's own terms. Bounded by the tool that
+  // creates it; never a transcript excerpt.
+  content              String                @db.Text
+  status               AgentMemoryStatus     @default(PENDING)
+  // Where the proposal came from. Kept for provenance only, and set to null
+  // when the conversation is deleted so the memory outlives the thread.
+  sourceConversationId String?
+  sourceConversation   AgentConversation?    @relation(fields: [sourceConversationId], references: [id], onDelete: SetNull)
+  createdAt            DateTime              @default(now())
+  // When the trainee confirmed or the row became active. Null while pending.
+  decidedAt            DateTime?
+
+  @@index([userId, status, createdAt])
+}
+
+enum AgentMemoryStatus {
+  PENDING
+  ACTIVE
+}
+
+// A change to the trainee's plan that the agent proposed and the trainee has
+// not decided on yet. Nothing here is a plan: the store keeps the *operation*
+// plus the localized rows for the confirmation card, and applying re-runs the
+// operation against the live plan. A proposal can therefore never become a
+// way to write a plan the rules never validated.
+model AgentPlanProposal {
+  id             String                  @id @default(cuid())
+  userId         String
+  user           User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  conversationId String?
+  conversation   AgentConversation?      @relation(fields: [conversationId], references: [id], onDelete: SetNull)
+  kind           AgentPlanChangeKind
+  // The plan version the diff was computed against. Applying refuses when the
+  // active plan has moved on, so a stale card cannot undo a newer decision.
+  basePlanId     String
+  // Localized rows for the card: what changes, from what, to what.
+  diff           Json
+  // The operation itself. Validated when proposed and validated again when
+  // applied, because the plan it lands on may have changed in between.
+  change         Json
+  status         AgentPlanProposalStatus @default(PENDING)
+  resultPlanId   String?
+  createdAt      DateTime                @default(now())
+  decidedAt      DateTime?
+
+  @@index([userId, status, createdAt])
+}
+
+enum AgentPlanChangeKind {
+  SWAP_EXERCISE
+  MOVE_TRAINING_DAY
+  SET_CARDIO_MINUTES
+}
+
+enum AgentPlanProposalStatus {
+  PENDING
+  APPLIED
+  DISMISSED
+}
+
+// A set the trainee described in the chat, waiting for them to confirm it. The
+// agent does not log anything: it resolves the exercise and the numbers, stores
+// them here, and the trainee's tap is what writes to their training history.
+// Malformed input is refused before this row exists, and the write itself goes
+// through the same set rules the manual form uses.
+model AgentLogProposal {
+  id               String                @id @default(cuid())
+  userId           String
+  user             User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  conversationId   String?
+  conversation     AgentConversation?    @relation(fields: [conversationId], references: [id], onDelete: SetNull)
+  exerciseId       String
+  // Localized rows for the confirmation card: what will be written, in the
+  // trainee's language and unit.
+  summary          Json
+  // The validated entry, in canonical units (kg).
+  entry            Json
+  status           AgentLogProposalStatus @default(PENDING)
+  resultSessionId  String?
+  createdAt        DateTime              @default(now())
+  decidedAt        DateTime?
+
+  @@index([userId, status, createdAt])
+}
+
+enum AgentLogProposalStatus {
+  PENDING
+  APPLIED
+  DISMISSED
+}
+
+model AgentMessage {
+  id             String             @id @default(cuid())
+  conversationId String
+  conversation   AgentConversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role           AgentMessageRole
+  status         AgentMessageStatus @default(COMPLETE)
+  content        String             @db.Text
+  createdAt      DateTime           @default(now())
+
+  @@index([conversationId, createdAt])
+}
+
+model AgentRun {
+  id              String             @id
+  userId          String
+  user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  conversationId  String?
+  conversation    AgentConversation? @relation(fields: [conversationId], references: [id], onDelete: SetNull)
+  kind            AgentRunKind
+  status          AgentRunStatus     @default(RUNNING)
+  stopReason      AgentStopReason?
+  runtimeVersion  String
+  provider        String
+  model           String
+  inputHash       String
+  modelTurns      Int                @default(0)
+  toolCalls       Int                @default(0)
+  // What the run cost: token counts summed over its model turns, and the
+  // provider-reported cost in millionths of a US dollar (an integer, so money is
+  // never a float). Null on rows written before the accounting existed.
+  inputTokens     Int?
+  outputTokens    Int?
+  totalTokens     Int?
+  costMicroUsd    Int?
+  errorCode       String?
+  startedAt       DateTime           @default(now())
+  finishedAt      DateTime?
+  toolInvocations ToolInvocation[]
+
+  @@index([userId, startedAt])
+  @@index([conversationId, startedAt])
+}
+
+model ToolInvocation {
+  id                   String               @id @default(cuid())
+  runId                String
+  run                  AgentRun             @relation(fields: [runId], references: [id], onDelete: Cascade)
+  toolCallId           String
+  toolName             String
+  argsHash             String
+  resultHash           String?
+  authorizationAllowed Boolean
+  status               ToolInvocationStatus @default(STARTED)
+  durationMs           Int?
+  errorCode            String?
+  createdAt            DateTime             @default(now())
+
+  @@unique([runId, toolCallId])
+  @@index([runId, createdAt])
+}
+
+model Exercise {
+  id                String                 @id @default(cuid())
+  userId            String
+  user              User                   @relation(fields: [userId], references: [id])
+  name              String
+  muscleGroup       MuscleGroup
+  category          ExerciseCategory
+  defaultRestSec    Int                    @default(90)
+  notes             String?
+  // For bodyweight exercises (pull-ups, dips, push-ups...): the effective
+  // tonnage includes User.bodyweight. Set.weight remains the added load (0 by
+  // default, always >= 0 - the input schemas clamp it; negative loads for
+  // assistance machines are deliberately not supported, see issue #118).
+  usesBodyweight    Boolean                @default(false)
+  // Determines which saved-gym inventory constrains suggested loads.
+  equipmentType     EquipmentType          @default(OTHER)
+  createdAt         DateTime               @default(now())
+  programExercises  ProgramExercise[]
+  sets              Set[]
+  goals             ExerciseGoal[]
+  gymConfigs        GymExerciseConfig[]
+  gymEquipmentLinks GymEquipmentExercise[]
+
+  @@unique([userId, name])
+}
+
+enum EquipmentType {
+  DUMBBELL
+  BARBELL
+  MACHINE
+  CABLE
+  BODYWEIGHT
+  CARDIO
+  OTHER
+}
+
+enum MuscleGroup {
+  CHEST
+  BACK_WIDTH
+  BACK_THICKNESS
+  SHOULDERS_FRONT
+  SHOULDERS_LATERAL
+  SHOULDERS_REAR
+  BICEPS
+  TRICEPS
+  FOREARMS
+  QUADS
+  HAMSTRINGS
+  GLUTES
+  CALVES
+  ABS
+  LOWER_BACK
+  // Fallback bucket for imported exercises that could not be classified
+  // (issue #100). The user can re-categorize them afterwards.
+  OTHER
+}
+
+enum ExerciseCategory {
+  COMPOUND
+  ISOLATION
+  // Conditioning work (issue #133): running, rowing, cycling... Sets on a
+  // CARDIO exercise are duration/distance based (durationSec required,
+  // distanceM optional) and store reps = 1 / weight = 0 to keep the existing
+  // NOT NULL columns untouched. They are excluded from tonnage/e1RM/PR math.
+  CARDIO
+}
+
+model Program {
+  id                 String              @id @default(cuid())
+  userId             String
+  user               User                @relation(fields: [userId], references: [id])
+  name               String
+  description        String?
+  phase              String
+  isActive           Boolean             @default(false)
+  startDate          DateTime            @default(now())
+  endDate            DateTime?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  workouts           Workout[]
+  sessions           Session[]
+  fitnessPlanVersion FitnessPlanVersion?
+}
+
+model Workout {
+  id        String            @id @default(cuid())
+  programId String
+  program   Program           @relation(fields: [programId], references: [id], onDelete: Cascade)
+  name      String
+  dayOfWeek Int?
+  order     Int
+  exercises ProgramExercise[]
+  sessions  Session[]
+}
+
+model ProgramExercise {
+  id                     String                @id @default(cuid())
+  workoutId              String
+  workout                Workout               @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  exerciseId             String
+  exercise               Exercise              @relation(fields: [exerciseId], references: [id])
+  order                  Int
+  targetSets             Int
+  targetRepsMin          Int
+  targetRepsMax          Int
+  targetRIR              Int
+  restSec                Int
+  tempo                  String?
+  notes                  String?
+  // Superset pairing (issue #146, slice 1, additive): exercises of the same
+  // workout sharing a group number form a superset; NULL = standalone. The
+  // stored number is arbitrary - A1/A2 labels renumber on read (lib/supersets).
+  supersetGroup          Int?
+  // Intra-session set autoregulation. PRESERVE_RIR keeps effort stable and
+  // lets reps drift; PRESERVE_REPS adjusts load to keep reps stable.
+  autoregulationMode     SetAutoregulationMode @default(PRESERVE_RIR)
+  // Optional per-exercise overrides. Null delegates to deterministic defaults
+  // derived from exercise category and muscle group.
+  fatigueRate            Float?
+  loadAdjustmentPct      Float?
+  initialLoadKg          Float?
+  initialLoadSource      InitialLoadSource?
+  progressionRuleVersion String?
+  introTargetRIR         Int?
+  introEndsAt            DateTime?
+}
+
+enum SetAutoregulationMode {
+  PRESERVE_RIR
+  PRESERVE_REPS
+}
+
+model Session {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id])
+  programId  String?
+  program    Program?  @relation(fields: [programId], references: [id])
+  workoutId  String?
+  workout    Workout?  @relation(fields: [workoutId], references: [id])
+  startedAt  DateTime  @default(now())
+  finishedAt DateTime?
+  notes      String?
+  // The gym is frozen when the session starts so later switching gyms does
+  // not change the inventory used by an in-progress or historical workout.
+  gymId      String?
+  gym        Gym?      @relation(fields: [gymId], references: [id], onDelete: SetNull)
+  sets       Set[]
+
+  @@index([userId, startedAt])
+}
+
+model Gym {
+  id              String              @id @default(cuid())
+  userId          String
+  user            User                @relation("GymOwner", fields: [userId], references: [id], onDelete: Cascade)
+  name            String
+  // All inventory values are stored in kg, matching Set.weight.
+  dumbbellWeights Float[]             @default([])
+  plateWeights    Float[]             @default([])
+  barWeights      Float[]             @default([])
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  activeForUsers  User[]              @relation("ActiveGym")
+  sessions        Session[]
+  exerciseConfigs GymExerciseConfig[]
+  equipment       GymEquipment[]
+
+  @@unique([userId, name])
+  @@index([userId, updatedAt])
+}
+
+model GymExerciseConfig {
+  id            String   @id @default(cuid())
+  gymId         String
+  gym           Gym      @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  exerciseId    String
+  exercise      Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  isAvailable   Boolean  @default(true)
+  // Optional explicit machine/cable pin stack or other exercise-specific
+  // loads. Empty means use the normal category increment.
+  weightOptions Float[]  @default([])
+
+  @@unique([gymId, exerciseId])
+  @@index([exerciseId])
+}
+
+model GymEquipment {
+  id            String                 @id @default(cuid())
+  gymId         String
+  gym           Gym                    @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  name          String
+  equipmentType EquipmentType
+  description   String?
+  manufacturer  String?
+  modelName     String?
+  quantity      Int                    @default(1)
+  weightOptions Float[]                @default([])
+  imageUrl      String?
+  imageData     Bytes?
+  imageMimeType String?
+  createdAt     DateTime               @default(now())
+  updatedAt     DateTime               @updatedAt
+  exerciseLinks GymEquipmentExercise[]
+  performedSets Set[]
+
+  @@unique([gymId, name])
+  @@index([gymId, equipmentType])
+}
+
+model GymEquipmentExercise {
+  equipmentId String
+  equipment   GymEquipment @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+  exerciseId  String
+  exercise    Exercise     @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  @@id([equipmentId, exerciseId])
+  @@index([exerciseId])
+}
+
+model Set {
+  id                    String        @id @default(cuid())
+  sessionId             String
+  session               Session       @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  exerciseId            String
+  exercise              Exercise      @relation(fields: [exerciseId], references: [id])
+  gymEquipmentId        String?
+  gymEquipment          GymEquipment? @relation(fields: [gymEquipmentId], references: [id], onDelete: SetNull)
+  equipmentNameSnapshot String?
+  equipmentLoadSnapshot Json?
+  setNumber             Int
+  weight                Float
+  reps                  Int
+  rir                   Int?
+  // Cardio sets (issue #133, additive): duration in seconds (>= 1 when set)
+  // and optional distance in meters. NULL on strength sets - existing rows
+  // are untouched and lifting flows never write these.
+  durationSec           Int?
+  distanceM             Float?
+  // Average heart rate in bpm (issue #152, additive): the extra signal a TCX
+  // file import carries over manual logging. 40..250 when present (enforced
+  // by every writer), NULL on strength sets and on cardio logged without it.
+  avgHr                 Int?
+  // Maximum (peak) heart rate in bpm (issue #203, additive): the companion HR
+  // metric watches record, carried in the same TCX exports. 40..250 when
+  // present (enforced by every writer), NULL on strength sets and on cardio
+  // logged without it.
+  maxHr                 Int?
+  // Downsampled pace/HR track of an imported cardio activity (issue #254,
+  // additive): a JSON array of up to a few hundred points
+  // [{ t, d?, hr? }] where t = seconds from the start, d = cumulative meters,
+  // hr = bpm. NULL on strength sets and on cardio logged without a track.
+  track                 Json?
+  notes                 String?
+  isWarmup              Boolean       @default(false)
+  isDropSet             Boolean       @default(false)
+  completedAt           DateTime      @default(now())
+
+  @@index([exerciseId, completedAt])
+  // Leading on gymEquipmentId so the FK referential action (ON DELETE SET
+  // NULL, executed by Postgres since relationMode is unset) can locate the
+  // referencing rows without a full scan when equipment or a gym is deleted;
+  // completedAt also serves per-equipment history queries (issue #325).
+  @@index([gymEquipmentId, completedAt])
+}
+
+// Per-exercise target goal (issue #90): a concrete "weight x reps" the user
+// wants to reach, measured against the existing e1RM machinery (lib/goals.ts).
+// Additive: one active goal per (user, exercise); creating a new one replaces
+// it (upsert on the unique constraint). Weight is stored in kg like Set.weight;
+// for bodyweight exercises it is the EFFECTIVE load (bodyweight + added load),
+// consistent with lib/stats.ts effectiveWeight semantics.
+model ExerciseGoal {
+  id           String    @id @default(cuid())
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exerciseId   String
+  exercise     Exercise  @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  // Target load in kg (effective load for bodyweight exercises).
+  targetWeight Float
+  targetReps   Int
+  createdAt    DateTime  @default(now())
+  // Stamped server-side when a logged working set meets the target
+  // (weight >= targetWeight and reps >= targetReps). Null = not achieved yet.
+  achievedAt   DateTime?
+
+  @@unique([userId, exerciseId])
+}
+
+// Per-muscle weekly volume targets (issue #211). Personalizes the MEV/MRV
+// reference band the progress-page volume card classifies against: serious
+// lifters individualize these landmarks. Additive and fully optional - one row
+// per (userId, muscleGroup); the ABSENCE of a row falls back to the global
+// defaults (WEEKLY_SETS_MEV / WEEKLY_SETS_MRV in lib/stats.ts), so existing
+// users are unaffected. mev >= 1 and mrv > mev are enforced by the Zod input
+// schema; the band stays a display-only heuristic and never feeds progression
+// or coach logic.
+model VolumeTarget {
+  id          String      @id @default(cuid())
+  userId      String
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  muscleGroup MuscleGroup
+  // Minimum effective volume (sets/week) and maximum recoverable volume.
+  mev         Int
+  mrv         Int
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@unique([userId, muscleGroup])
+}
+
+// Bodyweight history (issue #99). Additive: User.bodyweight stays the single
+// "current value" the rest of the app reads (effective load, coach payload);
+// this table keeps the measurement history behind it. Logging an entry also
+// updates User.bodyweight; deleting the newest entry re-syncs it to the new
+// newest one (or leaves the profile value alone when no entries remain).
+model BodyweightEntry {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Stored in kg like every weight in the schema; converted at the edges.
+  weightKg   Float
+  measuredAt DateTime @default(now())
+  note       String?
+
+  @@index([userId, measuredAt])
+}
+
+// Tape-measure body measurements (issue #202, additive): the recomp/hypertrophy
+// companion to bodyweight tracking. Stored always in cm; the client converts
+// from the display unit. One row per (site, time) measurement; nothing else in
+// the app reads it, so the table is fully additive.
+model BodyMeasurement {
+  id         String              @id @default(cuid())
+  userId     String
+  user       User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  site       BodyMeasurementSite
+  // Stored in centimeters; the client converts from cm/inches at the edge.
+  valueCm    Float
+  measuredAt DateTime            @default(now())
+  note       String?
+
+  @@index([userId, site, measuredAt])
+}
+
+enum BodyMeasurementSite {
+  WAIST
+  HIPS
+  CHEST
+  SHOULDERS
+  NECK
+  ARM_LEFT
+  ARM_RIGHT
+  FOREARM_LEFT
+  FOREARM_RIGHT
+  THIGH_LEFT
+  THIGH_RIGHT
+  CALF_LEFT
+  CALF_RIGHT
+}
+
+// Progress photo metadata (issue #269, additive): the visual companion to
+// bodyweight and tape-measure tracking. The image bytes live on the LOCAL
+// filesystem (under UPLOADS_DIR, gitignored, never a public static path) and
+// only this row's storagePath points at them; every read goes through an
+// ownership-scoped API route. mimeType is the SNIFFED type (magic bytes, an
+// allowlist of jpeg/png/webp), never the client-declared one.
+model ProgressPhoto {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  takenAt     DateTime @default(now())
+  // Path of the image file RELATIVE to the progress-photo storage dir
+  // (<userId>/<photoId>.<ext>), so a relocated UPLOADS_DIR keeps working.
+  storagePath String
+  mimeType    String
+  byteSize    Int
+  note        String?
+  createdAt   DateTime @default(now())
+
+  @@index([userId, takenAt])
+}
+
+model CoachSession {
+  id        String    @id @default(cuid())
+  userId    String
+  weekStart DateTime
+  weekEnd   DateTime
+  prompt    String    @db.Text
+  response  String    @db.Text
+  appliedAt DateTime?
+  createdAt DateTime  @default(now())
+}
+
+// Pre-session readiness / soreness check-in (issue #38). Additive, optional:
+// the app never requires a check-in, and the coach treats it as one more input
+// signal for recovery-anchored auto-regulation. Soreness is stored per muscle
+// group as a JSON map (group -> 1-5) so adding groups later needs no migration.
+model ReadinessCheckin {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Overall readiness to train, 1 (drained) to 5 (primed).
+  readiness    Int
+  // Sleep quality the previous night, 1 (poor) to 5 (great).
+  sleepQuality Int
+  // Optional per-muscle-group soreness: { "QUADS": 4, "CHEST": 2, ... } on a
+  // 1-5 scale. Stored as JSON to stay flexible without a schema change.
+  soreness     Json?
+  // Optional free-text note.
+  note         String?
+  createdAt    DateTime @default(now())
+
+  @@index([userId, createdAt])
+}

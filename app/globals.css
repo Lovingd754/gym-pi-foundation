@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Palette: warm neutrals, not a cool dashboard grey. The product is a training
+   logbook, so surfaces read like paper and the only strong colour is the ink.
+   Radii stay at or below 8px and numbers use tabular figures so a column of
+   loads lines up like a written log. */
+@layer base {
+  :root {
+    --background: 40 33% 99%;
+    --foreground: 30 12% 12%;
+    --card: 40 30% 98%;
+    --card-foreground: 30 12% 12%;
+    --popover: 40 33% 99%;
+    --popover-foreground: 30 12% 12%;
+    --primary: 30 12% 14%;
+    --primary-foreground: 40 33% 98%;
+    --secondary: 40 16% 94%;
+    --secondary-foreground: 30 12% 14%;
+    --muted: 40 16% 94%;
+    --muted-foreground: 30 7% 42%;
+    --accent: 40 16% 93%;
+    --accent-foreground: 30 12% 14%;
+    --destructive: 8 62% 44%;
+    --destructive-foreground: 40 33% 98%;
+    --border: 38 14% 88%;
+    --input: 38 14% 86%;
+    --ring: 30 12% 20%;
+    --radius: 0.375rem;
+  }
+
+  .dark {
+    --background: 30 9% 8%;
+    --foreground: 40 20% 94%;
+    --card: 30 9% 10%;
+    --card-foreground: 40 20% 94%;
+    --popover: 30 9% 10%;
+    --popover-foreground: 40 20% 94%;
+    --primary: 40 20% 92%;
+    --primary-foreground: 30 12% 10%;
+    --secondary: 30 7% 15%;
+    --secondary-foreground: 40 20% 94%;
+    --muted: 30 7% 15%;
+    --muted-foreground: 35 10% 64%;
+    --accent: 30 7% 17%;
+    --accent-foreground: 40 20% 94%;
+    --destructive: 8 55% 52%;
+    --destructive-foreground: 30 12% 10%;
+    --border: 30 7% 19%;
+    --input: 30 7% 22%;
+    --ring: 40 20% 80%;
+  }
+}
+
+@layer utilities {
+  /* Loads, reps and calories should line up in a column like a written log. */
+  .numeric {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* Printable sheets (issue #333): A4 portrait, black on white, no app chrome. */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 12mm;
+  }
+  html,
+  body {
+    background: white !important;
+    color: black !important;
+  }
+}

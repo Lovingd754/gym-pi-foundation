@@ -1,0 +1,203 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  TEST_DATABASE_URL: postgresql://gympi_test:gympi_test@localhost:5434/gympi_test
+
+jobs:
+  quality:
+    name: Lint, typecheck, unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22.19.0
+          cache: npm
+      - run: npm ci
+      - run: npx prisma generate
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run test
+
+  integration:
+    name: Integration tests (Postgres)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: public.ecr.aws/docker/library/postgres:16-alpine
+        env:
+          POSTGRES_USER: gympi_test
+          POSTGRES_PASSWORD: gympi_test
+          POSTGRES_DB: gympi_test
+        ports:
+          - 5434:5432
+        options: >-
+          --health-cmd "pg_isready -U gympi_test"
+          --health-interval 5s --health-timeout 5s --health-retries 5
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22.19.0
+          cache: npm
+      - run: npm ci
+      - run: npx prisma generate
+      - run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ env.TEST_DATABASE_URL }}
+      - run: npm run test:integration
+
+  build:
+    name: Production build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22.19.0
+          cache: npm
+      - run: npm ci
+      - run: npx prisma generate
+      - run: npm run build
+        env:
+          DATABASE_URL: postgresql://user:pass@localhost:5432/db
+          JWT_SECRET: ci-build-placeholder-secret-at-least-32-chars
+
+  docker-smoke:
+    name: Docker smoke test (production image)
+    runs-on: ubuntu-latest
+    # The image build alone can take 6-8 minutes on a cold GHA cache since the
+    # exercise-media and MCP/i18n dependencies landed; 10 was hit twice.
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: docker/setup-buildx-action@v3
+      - name: Build the production image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          tags: gympi:smoke
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Start Postgres
+        run: |
+          docker network create smoke
+          # The ECR public mirror intermittently answers "toomanyrequests: Rate
+          # exceeded" (same transient the service-container jobs hit at
+          # "Initialize containers"); retry the pull with backoff instead of
+          # failing the whole job on the first 429.
+          for attempt in $(seq 1 5); do
+            if docker pull -q public.ecr.aws/docker/library/postgres:16-alpine; then
+              break
+            fi
+            if [ "$attempt" = "5" ]; then
+              echo "Could not pull the Postgres image after 5 attempts" >&2
+              exit 1
+            fi
+            echo "Pull attempt $attempt failed (rate limited?), retrying in 20s..."
+            sleep 20
+          done
+          docker run -d --name smoke-db --network smoke \
+            -e POSTGRES_USER=gympi -e POSTGRES_PASSWORD=gympi -e POSTGRES_DB=gympi \
+            public.ecr.aws/docker/library/postgres:16-alpine
+          for i in $(seq 1 30); do
+            if docker exec smoke-db pg_isready -U gympi -d gympi >/dev/null 2>&1; then
+              echo "Postgres is ready"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Postgres did not become ready in time" >&2
+          exit 1
+      - name: Start the app (migrate deploy + server, same command as prod compose)
+        run: |
+          docker run -d --name smoke-app --network smoke -p 3000:3000 \
+            -e DATABASE_URL=postgresql://gympi:gympi@smoke-db:5432/gympi \
+            -e JWT_SECRET=docker-smoke-ci-secret-at-least-32-characters \
+            gympi:smoke \
+            sh -c "node node_modules/prisma/build/index.js migrate deploy && node server.js"
+      - name: Probe the image (login page, register, login)
+        run: |
+          set -u
+          base=http://localhost:3000
+
+          # Wait for migrations + server startup, then require GET /login = 200.
+          code=000
+          for i in $(seq 1 45); do
+            code=$(curl -s --max-time 10 -o /dev/null -w '%{http_code}' "$base/login" || true)
+            if [ "$code" = "200" ]; then break; fi
+            sleep 2
+          done
+          if [ "$code" != "200" ]; then
+            echo "GET /login never returned 200 (last status: $code)" >&2
+            exit 1
+          fi
+          echo "GET /login -> 200"
+
+          # Create the probe account through the image itself: exercises the
+          # bcrypt native binding (hash), Prisma writes, and the JWT signing
+          # that issue #127 showed can break only inside the standalone image.
+          code=$(curl -s --max-time 30 -o /tmp/register.json -w '%{http_code}' -X POST "$base/api/auth/register" \
+            -H 'Content-Type: application/json' \
+            --data '{"email":"smoke@example.com","password":"smoke-test-password","displayName":"Smoke"}')
+          if [ "$code" != "200" ]; then
+            echo "POST /api/auth/register -> $code" >&2
+            cat /tmp/register.json >&2 || true
+            exit 1
+          fi
+          echo "POST /api/auth/register -> 200"
+
+          # The login probe proper: bcrypt.compare + JWT + DB (the #127 class).
+          code=$(curl -s --max-time 30 -o /tmp/login.json -w '%{http_code}' -X POST "$base/api/auth/login" \
+            -H 'Content-Type: application/json' \
+            --data '{"email":"smoke@example.com","password":"smoke-test-password"}')
+          if [ "$code" != "200" ]; then
+            echo "POST /api/auth/login -> $code" >&2
+            cat /tmp/login.json >&2 || true
+            exit 1
+          fi
+          echo "POST /api/auth/login -> 200"
+      - name: Container logs (on failure)
+        if: failure()
+        run: |
+          echo "--- smoke-app logs ---"
+          docker logs smoke-app 2>&1 || true
+          echo "--- smoke-db logs ---"
+          docker logs smoke-db 2>&1 || true
+
+  e2e:
+    name: End to end (Playwright)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: public.ecr.aws/docker/library/postgres:16-alpine
+        env:
+          POSTGRES_USER: gympi_test
+          POSTGRES_PASSWORD: gympi_test
+          POSTGRES_DB: gympi_test
+        ports:
+          - 5434:5432
+        options: >-
+          --health-cmd "pg_isready -U gympi_test"
+          --health-interval 5s --health-timeout 5s --health-retries 5
+    env:
+      DATABASE_URL: postgresql://gympi_test:gympi_test@localhost:5434/gympi_test
+      JWT_SECRET: e2e-test-secret-at-least-32-characters
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22.19.0
+          cache: npm
+      - run: npm ci
+      - run: npx prisma generate
+      - run: npx prisma migrate deploy
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e

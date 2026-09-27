@@ -1,0 +1,173 @@
+{
+  "separateFromBaseline": true,
+  "provider": "deepseek",
+  "model": "deepseek-v4-flash",
+  "completed": 2,
+  "passed": 2,
+  "elapsedMs": 14339,
+  "costUsd": 0.005412167999999999,
+  "wireUsage": [
+    {
+      "prompt_tokens": 4905,
+      "completion_tokens": 293,
+      "total_tokens": 5198,
+      "prompt_tokens_details": {
+        "cached_tokens": 4736
+      },
+      "prompt_cache_hit_tokens": 4736,
+      "prompt_cache_miss_tokens": 169
+    },
+    {
+      "prompt_tokens": 11764,
+      "completion_tokens": 670,
+      "total_tokens": 12434,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 11764
+    },
+    {
+      "prompt_tokens": 12467,
+      "completion_tokens": 509,
+      "total_tokens": 12976,
+      "prompt_tokens_details": {
+        "cached_tokens": 12288
+      },
+      "prompt_cache_hit_tokens": 12288,
+      "prompt_cache_miss_tokens": 179
+    },
+    {
+      "prompt_tokens": 848,
+      "completion_tokens": 149,
+      "total_tokens": 997,
+      "prompt_tokens_details": {
+        "cached_tokens": 640
+      },
+      "prompt_cache_hit_tokens": 640,
+      "prompt_cache_miss_tokens": 208
+    },
+    {
+      "prompt_tokens": 9472,
+      "completion_tokens": 1384,
+      "total_tokens": 10856,
+      "prompt_tokens_details": {
+        "cached_tokens": 3840
+      },
+      "prompt_cache_hit_tokens": 3840,
+      "prompt_cache_miss_tokens": 5632
+    },
+    {
+      "prompt_tokens": 11172,
+      "completion_tokens": 1261,
+      "total_tokens": 12433,
+      "prompt_tokens_details": {
+        "cached_tokens": 10752
+      },
+      "prompt_cache_hit_tokens": 10752,
+      "prompt_cache_miss_tokens": 420
+    }
+  ],
+  "results": [
+    {
+      "id": "travel-recovery",
+      "passed": true,
+      "errors": [],
+      "ms": 5644,
+      "strategy": {
+        "weekdays": [
+          1,
+          4
+        ],
+        "avoidCatalogKeys": [
+          "back_squat",
+          "romanian_deadlift",
+          "leg_press",
+          "cable_pull_through",
+          "bench_press",
+          "chest_press",
+          "barbell_row",
+          "seated_cable_row",
+          "overhead_press",
+          "machine_shoulder_press",
+          "lat_pulldown",
+          "cable_pulldown",
+          "cable_lateral_raise",
+          "machine_lateral_raise",
+          "leg_extension",
+          "leg_curl",
+          "cable_curl",
+          "barbell_curl",
+          "cable_triceps_extension",
+          "machine_calf_raise",
+          "cable_crunch"
+        ],
+        "preferCatalogKeys": [
+          "goblet_squat",
+          "dumbbell_bench_press",
+          "one_arm_dumbbell_row",
+          "dumbbell_romanian_deadlift"
+        ],
+        "cardioPreference": "STANDARD",
+        "recovery": "REDUCED",
+        "rationale": "Only Monday/Thursday available (hotel dumbbells, 45 min), so two full-body sessions with rest between; previous plan's 3rd day is dropped. Fatigue is HIGH and sleep averages 5.5h, so volume is reduced and cardio stays at baseline (not increased) rather than pushing harder. Dumbbells plus bodyweight only, matching equipment on both days. Loads remain uncertain; calibrate dumbbells and pull-ups by RIR, using the 60kg bench reference cautiously.",
+        "source": "MODEL"
+      },
+      "generated": {
+        "weekdays": [
+          1,
+          4
+        ],
+        "durations": [
+          26,
+          26
+        ],
+        "cardioMinutes": 0
+      }
+    },
+    {
+      "id": "no-evidence",
+      "passed": true,
+      "errors": [],
+      "ms": 8695,
+      "strategy": {
+        "weekdays": [
+          1,
+          3,
+          5
+        ],
+        "avoidCatalogKeys": [],
+        "preferCatalogKeys": [
+          "goblet_squat",
+          "dumbbell_bench_press",
+          "one_arm_dumbbell_row",
+          "dumbbell_shoulder_press"
+        ],
+        "cardioPreference": "STANDARD",
+        "recovery": "STANDARD",
+        "rationale": "No prior plan, completion, body, load, or recovery evidence is available, so this week starts conservatively from the stated Monday/Wednesday/Friday 60-minute dumbbell and bodyweight setup. Three full-body sessions with rest days between them fit the spacing constraints. Prefer compound dumbbell and bodyweight movements within available equipment; add standard cardio and recovery without medical claims.",
+        "source": "MODEL"
+      },
+      "generated": {
+        "weekdays": [
+          1,
+          3,
+          5
+        ],
+        "durations": [
+          54,
+          54,
+          54
+        ],
+        "cardioMinutes": 0
+      }
+    }
+  ],
+  "limitations": [
+    "Two synthetic smoke cases, not statistical quality validation.",
+    "No DB, persistence, API, confirmation UI or summarizer coverage.",
+    "Actual production weekly prompt, parser and deterministic plan application used."
+  ],
+  "attempts": 1,
+  "cumulativeCostUsd": 0.005412167999999999
+}

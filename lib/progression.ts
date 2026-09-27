@@ -1,0 +1,411 @@
+import type { Exercise, MuscleGroup, ProgramExercise, Set } from '@/lib/prisma-client';
+import { constrainGymWeight, gymWeightOptions, type GymLoadConstraints } from '@/lib/gym-loads';
+
+// ============================================================
+// Load suggestion - double progression
+// ============================================================
+// Rule: if every working set of the last session reached the top of the
+// target rep range, we increase the load (+2.5 kg compound, +1 kg isolation).
+// Otherwise we keep the load and beat the reps.
+//
+// Auto-regulation (issue #53): a recent readiness/soreness check-in can make
+// the suggestion more conservative - it may HOLD the load (skip the increment)
+// or apply a single step-down when recovery is very poor. It can NEVER raise the
+// load beyond the normal progression rule (safety; avoids gaming the check-in).
+// With no readiness data in the recency window the output is identical to the
+// rule above.
+
+export type SuggestionReason =
+  | 'no-history'
+  | 'same-as-last'
+  | 'progression'
+  | 'readiness-hold'
+  | 'readiness-deload'
+  | 'planned-deload'
+  | 'initial-app-history'
+  | 'initial-user-reported'
+  | 'calibration'
+  | 'regression';
+
+export interface SuggestionResult {
+  weight: number | null;
+  reason: SuggestionReason;
+  // Reference load taken from the last session (max non-warmup weight).
+  workingWeight?: number;
+  // Increment applied when progressing (kg).
+  delta?: number;
+  // Top of the rep range used as the progression threshold.
+  targetRepsMax?: number;
+}
+
+// ------------------------------------------------------------
+// Readiness thresholds (named constants with rationale)
+// ------------------------------------------------------------
+// Recency window: a check-in only auto-regulates today's suggestion if it is
+// fresh. 36h covers "logged last night or this morning" without letting a stale
+// reading from days ago silently hold the load.
+export const READINESS_RECENCY_HOURS = 36;
+// Overall readiness is rated 1 (drained) to 5 (primed). At or below this we hold
+// the load instead of adding weight.
+export const READINESS_HOLD_AT_OR_BELOW = 2;
+// The lowest readiness rating - "drained". Treated as very poor recovery and
+// triggers a conservative step-down rather than just a hold.
+export const READINESS_DELOAD_AT_OR_BELOW = 1;
+// Per-muscle soreness is rated 1 (none) to 5 (severe). At or above this for the
+// exercise's primary muscle group we hold the load.
+export const SORENESS_HOLD_AT_OR_ABOVE = 4;
+// Severe soreness ("can barely move it") - triggers a step-down.
+export const SORENESS_DELOAD_AT_OR_ABOVE = 5;
+// Conservative single step-down, expressed as a fraction of the working load.
+// 10% is a light, evidence-informed deload that protects a fatigued muscle
+// without throwing away the training block.
+export const READINESS_DELOAD_FRACTION = 0.1;
+// The step-down math above relies on weights being >= 0 (the Zod input
+// schemas and both CSV importers clamp them): reducing a negative load by a
+// fraction would shrink assistance and make the set HARDER, not easier
+// (issue #118).
+
+// A recent readiness check-in, shaped for pure progression logic. The caller
+// resolves recency by passing `ageHours` (how old the check-in is), keeping this
+// module free of clock access and fully deterministic.
+export interface ReadinessSignal {
+  // Overall readiness to train, 1 (drained) to 5 (primed).
+  readiness: number;
+  // Optional per-muscle-group soreness, group -> 1 (none) to 5 (severe).
+  soreness?: Partial<Record<MuscleGroup, number>> | null;
+  // How old the check-in is, in hours. Used against READINESS_RECENCY_HOURS.
+  ageHours: number;
+}
+
+export type ProgressionSet = Pick<Set, 'weight' | 'reps' | 'rir'> & {
+  isWarmup?: boolean;
+  isDropSet?: boolean;
+};
+
+export interface ProgressionExposure {
+  sessionStartedAt: Date | string;
+  sets: ProgressionSet[];
+}
+
+// Applies the user's auto-regulation preference (issue #61) to a readiness
+// signal before it reaches suggestNextWeight. When the preference is off, the
+// signal is dropped (returns null), so the suggestion follows pure programmed
+// progression - identical to the pre-#55 behavior. When on, the signal passes
+// through unchanged. Kept pure so the gate is unit-testable on its own.
+export function readinessForSuggestion(
+  readiness: ReadinessSignal | null,
+  autoRegulationEnabled: boolean,
+): ReadinessSignal | null {
+  return autoRegulationEnabled ? readiness : null;
+}
+
+export function suggestNextWeight(
+  programExercise: ProgramExercise & { exercise: Exercise },
+  history: Pick<Set, 'weight' | 'reps' | 'rir'>[] | ProgressionExposure[],
+  readiness?: ReadinessSignal | null,
+  // True while the user runs a planned deload week (issue #112). The caller
+  // resolves User.deloadUntil against the clock (lib/deload.ts isDeloadActive)
+  // so this module stays deterministic.
+  plannedDeload?: boolean,
+  loadConstraints?: GymLoadConstraints | null,
+): SuggestionResult {
+  if (programExercise.progressionRuleVersion === 'double-progression-v2') {
+    return suggestManagedWeight(
+      programExercise,
+      toProgressionExposures(history),
+      readiness,
+      plannedDeload,
+      loadConstraints,
+    );
+  }
+
+  const lastSets = toLegacySets(history);
+  if (lastSets.length === 0) {
+    return { weight: null, reason: 'no-history' };
+  }
+
+  const targetRepsMax = programExercise.targetRepsMax;
+  const workingWeight = Math.max(...lastSets.map((s) => s.weight));
+
+  // We only consider the sets performed at the working load. Any drop sets
+  // (lighter loads) are ignored when deciding on progression.
+  const workingSets = lastSets.filter((s) => s.weight === workingWeight);
+  const allHitTopRange = workingSets.every((s) => s.reps >= targetRepsMax);
+
+  // Baseline (readiness-unaware) suggestion - identical to the original rule.
+  const delta = weightIncrement(programExercise.exercise.category);
+  const baseline: SuggestionResult = allHitTopRange
+    ? {
+        weight: +(workingWeight + delta).toFixed(2),
+        reason: 'progression',
+        workingWeight,
+        delta,
+        targetRepsMax,
+      }
+    : {
+        weight: workingWeight,
+        reason: 'same-as-last',
+        workingWeight,
+        targetRepsMax,
+      };
+
+  // Planned deload week (issue #112): one conservative step-down from the
+  // working load, taking precedence over a programmed increment and over a
+  // readiness hold. A simultaneous readiness deload is the SAME single 10%
+  // reduction (both use READINESS_DELOAD_FRACTION of the working load), so the
+  // two never stack - the larger single reduction is applied, never both.
+  if (plannedDeload) {
+    return constrainSuggestion(
+      {
+        weight: +(workingWeight * (1 - READINESS_DELOAD_FRACTION)).toFixed(2),
+        reason: 'planned-deload',
+        workingWeight,
+        targetRepsMax,
+      },
+      workingWeight,
+      programExercise.exercise.category,
+      loadConstraints,
+    );
+  }
+
+  const recovery = assessRecovery(readiness, programExercise.exercise.muscleGroup);
+  if (recovery === 'ok') {
+    return constrainSuggestion(
+      baseline,
+      workingWeight,
+      programExercise.exercise.category,
+      loadConstraints,
+    );
+  }
+
+  // Readiness may only hold or reduce. A step-down goes below the working load;
+  // a hold keeps the working load (never above it).
+  if (recovery === 'deload') {
+    const reduced = +(workingWeight * (1 - READINESS_DELOAD_FRACTION)).toFixed(2);
+    return constrainSuggestion(
+      {
+        weight: reduced,
+        reason: 'readiness-deload',
+        workingWeight,
+        targetRepsMax,
+      },
+      workingWeight,
+      programExercise.exercise.category,
+      loadConstraints,
+    );
+  }
+
+  // hold: keep the working load, drop any progression increment.
+  return constrainSuggestion(
+    {
+      weight: workingWeight,
+      reason: 'readiness-hold',
+      workingWeight,
+      targetRepsMax,
+    },
+    workingWeight,
+    programExercise.exercise.category,
+    loadConstraints,
+  );
+}
+
+function toProgressionExposures(
+  history: Pick<Set, 'weight' | 'reps' | 'rir'>[] | ProgressionExposure[],
+): ProgressionExposure[] {
+  if (history.length === 0) return [];
+  const first = history[0]!;
+  if ('sets' in first) return history as ProgressionExposure[];
+  return [{ sessionStartedAt: '', sets: history as ProgressionSet[] }];
+}
+
+function toLegacySets(
+  history: Pick<Set, 'weight' | 'reps' | 'rir'>[] | ProgressionExposure[],
+): Pick<Set, 'weight' | 'reps' | 'rir'>[] {
+  if (history.length === 0) return [];
+  const first = history[0]!;
+  if (!('sets' in first)) return history as Pick<Set, 'weight' | 'reps' | 'rir'>[];
+  return (first as ProgressionExposure).sets
+    .filter((set) => !set.isWarmup && !set.isDropSet)
+    .map(({ weight, reps, rir }) => ({ weight, reps, rir }));
+}
+
+type ExposureResult = {
+  workingWeight: number;
+  status: 'success' | 'failure' | 'neutral';
+};
+
+function classifyExposure(
+  programExercise: ProgramExercise,
+  exposure: ProgressionExposure,
+): ExposureResult | null {
+  const qualifying = exposure.sets.filter((set) => !set.isWarmup && !set.isDropSet);
+  if (qualifying.length === 0) return null;
+  const workingWeight = Math.max(...qualifying.map((set) => set.weight));
+  const workingSets = qualifying.filter((set) => set.weight === workingWeight);
+  const successful = workingSets.every(
+    (set) =>
+      set.reps >= programExercise.targetRepsMax &&
+      set.rir !== null &&
+      set.rir >= programExercise.targetRIR,
+  );
+  const failed = workingSets.some(
+    (set) =>
+      set.reps < programExercise.targetRepsMin ||
+      (set.rir !== null && set.rir <= programExercise.targetRIR - 2),
+  );
+  return { workingWeight, status: successful ? 'success' : failed ? 'failure' : 'neutral' };
+}
+
+function suggestManagedWeight(
+  programExercise: ProgramExercise & { exercise: Exercise },
+  exposures: ProgressionExposure[],
+  readiness?: ReadinessSignal | null,
+  plannedDeload?: boolean,
+  loadConstraints?: GymLoadConstraints | null,
+): SuggestionResult {
+  const classified = exposures
+    .map((exposure) => classifyExposure(programExercise, exposure))
+    .filter((result): result is ExposureResult => result !== null);
+
+  if (classified.length === 0) {
+    if (
+      programExercise.initialLoadKg !== null &&
+      programExercise.initialLoadSource === 'APP_HISTORY'
+    ) {
+      return { weight: programExercise.initialLoadKg, reason: 'initial-app-history' };
+    }
+    if (
+      programExercise.initialLoadKg !== null &&
+      programExercise.initialLoadSource === 'USER_REPORTED'
+    ) {
+      return { weight: programExercise.initialLoadKg, reason: 'initial-user-reported' };
+    }
+    return { weight: null, reason: 'calibration' };
+  }
+
+  const latest = classified[0]!;
+  const workingWeight = latest.workingWeight;
+  const targetRepsMax = programExercise.targetRepsMax;
+  const pair = classified.slice(0, 2);
+  let baseline: SuggestionResult = {
+    weight: workingWeight,
+    reason: 'same-as-last',
+    workingWeight,
+    targetRepsMax,
+  };
+
+  if (
+    pair.length === 2 &&
+    pair.every((exposure) => exposure.status === 'success') &&
+    !(programExercise.exercise.usesBodyweight && workingWeight === 0)
+  ) {
+    const normalDelta = weightIncrement(programExercise.exercise.category);
+    const options = gymWeightOptions(loadConstraints, workingWeight + normalDelta);
+    const target = options.some((weight) => weight > workingWeight)
+      ? workingWeight + 0.01
+      : workingWeight + normalDelta;
+    const weight = constrainGymWeight(target, workingWeight, loadConstraints);
+    baseline = {
+      weight,
+      reason: 'progression',
+      workingWeight,
+      delta: +(weight - workingWeight).toFixed(2),
+      targetRepsMax,
+    };
+  } else if (pair.length === 2 && pair.every((exposure) => exposure.status === 'failure')) {
+    baseline = {
+      weight: constrainGymWeight(workingWeight * 0.95, workingWeight, loadConstraints),
+      reason: 'regression',
+      workingWeight,
+      targetRepsMax,
+    };
+  }
+
+  if (plannedDeload) {
+    return constrainSuggestion(
+      {
+        weight: +(workingWeight * (1 - READINESS_DELOAD_FRACTION)).toFixed(2),
+        reason: 'planned-deload',
+        workingWeight,
+        targetRepsMax,
+      },
+      workingWeight,
+      programExercise.exercise.category,
+      loadConstraints,
+    );
+  }
+  const recovery = assessRecovery(readiness, programExercise.exercise.muscleGroup);
+  if (recovery === 'deload') {
+    return constrainSuggestion(
+      {
+        weight: +(workingWeight * (1 - READINESS_DELOAD_FRACTION)).toFixed(2),
+        reason: 'readiness-deload',
+        workingWeight,
+        targetRepsMax,
+      },
+      workingWeight,
+      programExercise.exercise.category,
+      loadConstraints,
+    );
+  }
+  if (recovery === 'hold') {
+    return constrainSuggestion(
+      { weight: workingWeight, reason: 'readiness-hold', workingWeight, targetRepsMax },
+      workingWeight,
+      programExercise.exercise.category,
+      loadConstraints,
+    );
+  }
+  return baseline;
+}
+
+function constrainSuggestion(
+  suggestion: SuggestionResult,
+  referenceWeight: number,
+  category: Exercise['category'],
+  constraints?: GymLoadConstraints | null,
+): SuggestionResult {
+  if (suggestion.weight == null) return suggestion;
+  const weight = constrainGymWeight(suggestion.weight, referenceWeight, constraints);
+  return {
+    ...suggestion,
+    weight,
+    ...(suggestion.reason === 'progression'
+      ? { delta: +(weight - referenceWeight).toFixed(2) }
+      : {}),
+  };
+}
+
+type Recovery = 'ok' | 'hold' | 'deload';
+
+// Decides whether a recent check-in should make the suggestion more
+// conservative. Returns 'ok' (no change) when there is no usable, in-window
+// signal, so the no-data path is byte-for-byte identical to the base rule.
+function assessRecovery(
+  readiness: ReadinessSignal | null | undefined,
+  muscleGroup: MuscleGroup,
+): Recovery {
+  if (!readiness) return 'ok';
+  // Out-of-window check-ins are ignored (stale signal must not hold the load).
+  if (!(readiness.ageHours <= READINESS_RECENCY_HOURS)) return 'ok';
+
+  const groupSoreness = readiness.soreness?.[muscleGroup];
+
+  const veryPoor =
+    readiness.readiness <= READINESS_DELOAD_AT_OR_BELOW ||
+    (typeof groupSoreness === 'number' && groupSoreness >= SORENESS_DELOAD_AT_OR_ABOVE);
+  if (veryPoor) return 'deload';
+
+  const poor =
+    readiness.readiness <= READINESS_HOLD_AT_OR_BELOW ||
+    (typeof groupSoreness === 'number' && groupSoreness >= SORENESS_HOLD_AT_OR_ABOVE);
+  if (poor) return 'hold';
+
+  return 'ok';
+}
+
+// Standard increment for the +/- buttons depending on the exercise category.
+// Compound: 2.5 kg, isolation: 1 kg.
+export function weightIncrement(category: Exercise['category']): number {
+  return category === 'COMPOUND' ? 2.5 : 1;
+}

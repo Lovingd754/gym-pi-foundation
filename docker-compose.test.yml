@@ -1,0 +1,29 @@
+# ============================================================
+# GymPi - Compose TEST
+# ============================================================
+# Ephemeral Postgres for integration and E2E tests. Data lives in tmpfs so it
+# is wiped on container stop. Exposed on host port 5434 to avoid clashing with
+# the dev database (5433).
+#
+#   docker compose -f docker-compose.test.yml up -d
+#   DATABASE_URL=postgresql://gympi_test:gympi_test@localhost:5434/gympi_test \
+#     npm run test
+#   docker compose -f docker-compose.test.yml down
+
+services:
+  test-db:
+    image: postgres:16-alpine
+    container_name: gympi-test-db
+    environment:
+      POSTGRES_USER: gympi_test
+      POSTGRES_PASSWORD: gympi_test
+      POSTGRES_DB: gympi_test
+    ports:
+      - '5434:5432'
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U gympi_test -d gympi_test']
+      interval: 5s
+      timeout: 5s
+      retries: 5
